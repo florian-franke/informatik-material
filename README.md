@@ -1,1 +1,1 @@
-# informatik-material
+# Informatik Unterrichtsmaterial
