@@ -2,22 +2,542 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Mein Unterrichtsmaterial</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Unterrichtsmaterial</title>
   <style>
-    body { font-family: sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; }
-    h1 { color: #2c5f8a; }
-    a { color: #2c5f8a; }
-    ul { line-height: 2; }
+    :root {
+      --bg:        #f7f6f2;
+      --surface:   #ffffff;
+      --border:    #e2ddd6;
+      --accent:    #3b6ea5;
+      --text:      #1e1e1e;
+      --muted:     #6b6560;
+      --folder:    #7a5c2e;
+      --file:      #3b6ea5;
+      --hover-bg:  #f0f4fa;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--accent);
+      color: #fff;
+      padding: 2rem 2rem 1.6rem;
+    }
+    header h1 { font-size: 1.55rem; font-weight: 700; letter-spacing: -.01em; }
+    header p   { margin-top: .3rem; font-size: .9rem; opacity: .82; }
+
+    /* ── Main ── */
+    main {
+      max-width: 820px;
+      margin: 2rem auto;
+      padding: 0 1.25rem 4rem;
+    }
+
+    /* ── Class accordion ── */
+    .class-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      overflow: hidden;
+    }
+
+    .class-toggle {
+      width: 100%;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      text-align: left;
+      transition: background .15s;
+    }
+    .class-toggle:hover { background: var(--hover-bg); }
+    .class-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+    .class-badge {
+      background: var(--accent);
+      color: #fff;
+      border-radius: 5px;
+      font-size: .8rem;
+      font-weight: 700;
+      padding: .2rem .55rem;
+      white-space: nowrap;
+      letter-spacing: .03em;
+    }
+
+    .class-label { font-size: 1rem; font-weight: 600; color: var(--text); flex: 1; }
+
+    .chevron {
+      width: 18px; height: 18px;
+      color: var(--muted);
+      transition: transform .22s ease;
+      flex-shrink: 0;
+    }
+    .class-toggle[aria-expanded="true"] .chevron { transform: rotate(180deg); }
+
+    /* ── Panel ── */
+    .class-panel {
+      display: none;
+      border-top: 1px solid var(--border);
+      padding: 1rem 1.25rem 1.25rem;
+    }
+    .class-panel.open { display: block; }
+
+    /* ── Tree ── */
+    .tree { list-style: none; padding-left: 0; }
+    .tree li { position: relative; }
+    .tree .tree {
+      padding-left: 1.4rem;
+      border-left: 1.5px solid var(--border);
+      margin-left: .55rem;
+    }
+
+    .tree-item {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .3rem .4rem;
+      border-radius: 5px;
+      font-size: .92rem;
+      user-select: none;
+      cursor: default;
+    }
+    .tree-item.folder {
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--folder);
+    }
+    .tree-item.folder:hover { background: #fdf5ec; }
+    .tree-item.file  { color: var(--file); }
+    .tree-item.file:hover { background: var(--hover-bg); }
+    .tree-item.placeholder { color: var(--muted); font-style: italic; font-size: .85rem; }
+
+    .icon { font-size: 1rem; flex-shrink: 0; width: 1.2em; text-align: center; }
+
+    .folder-chevron {
+      margin-left: auto;
+      width: 14px; height: 14px;
+      color: var(--muted);
+      transition: transform .18s;
+      flex-shrink: 0;
+    }
+    .tree-item.folder[aria-expanded="true"] .folder-chevron { transform: rotate(90deg); }
+
+    .subtree         { display: none; }
+    .subtree.open    { display: block; }
+
+    .empty-note { font-size: .83rem; color: var(--muted); margin-top: .6rem; padding-left: .2rem; }
+
+    footer { text-align: center; font-size: .8rem; color: var(--muted); padding-bottom: 2rem; }
+
+    @media (max-width: 480px) {
+      header { padding: 1.4rem 1rem 1.2rem; }
+      main   { padding: 0 .75rem 3rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .chevron, .folder-chevron { transition: none; }
+    }
   </style>
 </head>
 <body>
+
+<header>
   <h1>📚 Unterrichtsmaterial</h1>
+  <p>Klasse auswählen, Ordner öffnen, Material herunterladen.</p>
+</header>
 
-  <h2>Klasse 6</h2>
-  <ul>
-    <li><a href="arbeitsblatt1.pdf">Arbeitsblatt 1 </a></li>
-    <li><a href="loesung1.pdf">Lösung Arbeitsblatt 1</a></li>
-  </ul>
+<main>
 
+  <!-- Klasse 6 -->
+  <div class="class-block">
+    <button class="class-toggle" aria-expanded="false" aria-controls="panel-6">
+      <span class="class-badge">Kl. 6</span>
+      <span class="class-label">Klasse 6 – Informatik</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div class="class-panel" id="panel-6">
+      <ul class="tree" id="tree-6"></ul>
+      <p class="empty-note" id="note-6">Noch keine Materialien vorhanden.</p>
+    </div>
+  </div>
+
+  <!-- Klasse 7 -->
+  <div class="class-block">
+    <button class="class-toggle" aria-expanded="false" aria-controls="panel-7">
+      <span class="class-badge">Kl. 7</span>
+      <span class="class-label">Klasse 7 – Informatik</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div class="class-panel" id="panel-7">
+      <ul class="tree" id="tree-7"></ul>
+      <p class="empty-note" id="note-7">Noch keine Materialien vorhanden.</p>
+    </div>
+  </div>
+
+  <!-- Klasse 8 -->
+  <div class="class-block">
+    <button class="class-toggle" aria-expanded="false" aria-controls="panel-8">
+      <span class="class-badge">Kl. 8</span>
+      <span class="class-label">Klasse 8</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div class="class-panel" id="panel-8">
+      <ul class="tree" id="tree-8"></ul>
+      <p class="empty-note" id="note-8">Noch keine Materialien vorhanden.</p>
+    </div>
+  </div>
+
+  <!-- Klasse 9 -->
+  <div class="class-block">
+    <button class="class-toggle" aria-expanded="false" aria-controls="panel-9">
+      <span class="class-badge">Kl. 9</span>
+      <span class="class-label">Klasse 9</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div class="class-panel" id="panel-9">
+      <ul class="tree" id="tree-9"></ul>
+      <p class="empty-note" id="note-9">Noch keine Materialien vorhanden.</p>
+    </div>
+  </div>
+
+  <!-- Klasse 10 -->
+  <div class="class-block">
+    <button class="class-toggle" aria-expanded="false" aria-controls="panel-10">
+      <span class="class-badge">Kl. 10</span>
+      <span class="class-label">Klasse 10</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div class="class-panel" id="panel-10">
+      <ul class="tree" id="tree-10"></ul>
+      <p class="empty-note" id="note-10">Noch keine Materialien vorhanden.</p>
+    </div>
+  </div>
+
+  <!-- Klasse 11 -->
+  <div class="class-block">
+    <button class="class-toggle" aria-expanded="false" aria-controls="panel-11">
+      <span class="class-badge">Kl. 11</span>
+      <span class="class-label">Klasse 11</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div class="class-panel" id="panel-11">
+      <ul class="tree" id="tree-11"></ul>
+      <p class="empty-note" id="note-11">Noch keine Materialien vorhanden.</p>
+    </div>
+  </div>
+
+  <!-- Klasse 12 -->
+  <div class="class-block">
+    <button class="class-toggle" aria-expanded="false" aria-controls="panel-12">
+      <span class="class-badge">Kl. 12</span>
+      <span class="class-label">Klasse 12</span>
+      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div class="class-panel" id="panel-12">
+      <ul class="tree" id="tree-12"></ul>
+      <p class="empty-note" id="note-12">Noch keine Materialien vorhanden.</p>
+    </div>
+  </div>
+
+</main>
+
+<footer>Unterrichtsmaterial · Alle Rechte vorbehalten</footer>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+//  MATERIALSTRUKTUR
+//  So funktioniert das Schema:
+//
+//  Ordner:  { name: "Anzeigename", files: [ ...Inhalt... ] }
+//  Datei:   { name: "Dateiname.pdf", path: "pfad/zur/datei.pdf" }
+//
+//  Ordner können beliebig tief geschachtelt werden.
+//  Leeres files-Array [] = Ordner ist noch leer (zeigt Platzhalter).
+//
+//  GitHub-Pfade immer relativ zur index.html angeben, z.B.:
+//    "inf6/1-informationsdarstellung/material/AB01.pdf"
+// ═══════════════════════════════════════════════════════════════════
+const material = {
+
+  // ── Klasse 6 ────────────────────────────────────────────────────
+  6: [
+    {
+      name: "1 – Informationsdarstellung mit Grafik-, Text- und Multimediadokumenten Stand 06/2026",           // ← Namen anpassen
+      files: [
+        {
+          name: "Material",
+          files: [
+            { name: "PPT-Kennenlernen", path: "inf6/1-informationsdarstellung/Was-ist-Informatik.pptx" }
+            // { name: "AB01 – Beispiel.pdf", path: "inf6/1-unterkapitel1/material/AB01.pdf" }
+          ]
+        },
+        {
+          name: "Lösungen",
+          files: [
+            // { name: "Lösung AB01.pdf", path: "inf6/1-unterkapitel1/loesungen/AB01_Loesung.pdf" }
+          ]
+        },
+        {
+          name: "Leistungsnachweise",
+          files: [
+            // { name: "Test 1.pdf", path: "inf6/1-unterkapitel1/leistungsnachweise/Test1.pdf" }
+          ]
+        }
+      ]
+    },
+    {
+      name: "2 – Unterkapitel 2",           // ← Namen anpassen
+      files: [
+        {
+          name: "Material",
+          files: []
+        },
+        {
+          name: "Lösungen",
+          files: []
+        },
+        {
+          name: "Leistungsnachweise",
+          files: []
+        }
+      ]
+    }
+  ],
+
+  // ── Klasse 7 ────────────────────────────────────────────────────
+  7: [
+    {
+      name: "1 – Unterkapitel 1",           // ← Namen anpassen
+      files: [
+        {
+          name: "Material",
+          files: []
+        },
+        {
+          name: "Lösungen",
+          files: []
+        },
+        {
+          name: "Leistungsnachweise",
+          files: []
+        }
+      ]
+    },
+    {
+      name: "2 – Unterkapitel 2",           // ← Namen anpassen
+      files: [
+        {
+          name: "Material",
+          files: []
+        },
+        {
+          name: "Lösungen",
+          files: []
+        },
+        {
+          name: "Leistungsnachweise",
+          files: []
+        }
+      ]
+    }
+  ],
+
+  // ── Klassen 8–12 (gleiche Struktur, nach Bedarf erweitern) ──────
+  8: [
+    {
+      name: "1 – Unterkapitel 1",
+      files: [
+        { name: "Material",           files: [] },
+        { name: "Lösungen",           files: [] },
+        { name: "Leistungsnachweise", files: [] }
+      ]
+    },
+    {
+      name: "2 – Unterkapitel 2",
+      files: [
+        { name: "Material",           files: [] },
+        { name: "Lösungen",           files: [] },
+        { name: "Leistungsnachweise", files: [] }
+      ]
+    }
+  ],
+
+  9: [
+    {
+      name: "1 – Unterkapitel 1",
+      files: [
+        { name: "Material",           files: [] },
+        { name: "Lösungen",           files: [] },
+        { name: "Leistungsnachweise", files: [] }
+      ]
+    },
+    {
+      name: "2 – Unterkapitel 2",
+      files: [
+        { name: "Material",           files: [] },
+        { name: "Lösungen",           files: [] },
+        { name: "Leistungsnachweise", files: [] }
+      ]
+    }
+  ],
+
+  10: [
+    {
+      name: "1 – Unterkapitel 1",
+      files: [
+        { name: "Material",           files: [] },
+        { name: "Lösungen",           files: [] },
+        { name: "Leistungsnachweise", files: [] }
+      ]
+    },
+    {
+      name: "2 – Unterkapitel 2",
+      files: [
+        { name: "Material",           files: [] },
+        { name: "Lösungen",           files: [] },
+        { name: "Leistungsnachweise", files: [] }
+      ]
+    }
+  ],
+
+  11: [
+    {
+      name: "1 – Unterkapitel 1",
+      files: [
+        { name: "Material",           files: [] },
+        { name: "Lösungen",           files: [] },
+        { name: "Leistungsnachweise", files: [] }
+      ]
+    },
+    {
+      name: "2 – Unterkapitel 2",
+      files: [
+        { name: "Material",           files: [] },
+        { name: "Lösungen",           files: [] },
+        { name: "Leistungsnachweise", files: [] }
+      ]
+    }
+  ],
+
+  12: [
+    {
+      name: "1 – Unterkapitel 1",
+      files: [
+        { name: "Material",           files: [] },
+        { name: "Lösungen",           files: [] },
+        { name: "Leistungsnachweise", files: [] }
+      ]
+    },
+    {
+      name: "2 – Unterkapitel 2",
+      files: [
+        { name: "Material",           files: [] },
+        { name: "Lösungen",           files: [] },
+        { name: "Leistungsnachweise", files: [] }
+      ]
+    }
+  ]
+};
+
+// ── Tree renderer ────────────────────────────────────────────────
+function buildTree(items) {
+  if (!items || items.length === 0) return '';
+  let html = '<ul class="tree subtree open">';
+  for (const item of items) {
+    if (item.files !== undefined) {
+      const hasChildren = item.files.length > 0;
+      const sub = hasChildren ? buildTree(item.files) : '';
+      html += `<li>
+        <div class="tree-item folder" role="button" tabindex="0"
+             aria-expanded="${hasChildren ? 'true' : 'false'}"
+             aria-label="${item.name} öffnen">
+          <span class="icon">📁</span>
+          <span>${item.name}</span>
+          <svg class="folder-chevron" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2.5"
+               stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 6 15 12 9 18"/>
+          </svg>
+        </div>`;
+      if (hasChildren) {
+        html += sub;
+      } else {
+        html += `<ul class="tree subtree">
+          <li><div class="tree-item placeholder"><span class="icon">–</span>Noch keine Dateien</div></li>
+        </ul>`;
+      }
+      html += `</li>`;
+    } else {
+      const ext  = item.name.split('.').pop().toLowerCase();
+      const icon = ext === 'pdf' ? '📄'
+                 : (ext === 'docx' || ext === 'doc') ? '📝'
+                 : ext === 'pptx' ? '📊' : '📎';
+      html += `<li>
+        <div class="tree-item file">
+          <span class="icon">${icon}</span>
+          <a href="${item.path}" target="_blank" rel="noopener">${item.name}</a>
+        </div>
+      </li>`;
+    }
+  }
+  html += '</ul>';
+  return html;
+}
+
+// ── Inject & hide empty-note ─────────────────────────────────────
+for (const [grade, items] of Object.entries(material)) {
+  const treeEl = document.getElementById(`tree-${grade}`);
+  if (!treeEl) continue;
+  const html = buildTree(items);
+  treeEl.innerHTML = html
+    .replace(/^<ul class="tree subtree open">/, '')
+    .replace(/<\/ul>$/, '');
+  if (items.length > 0) {
+    const note = document.getElementById(`note-${grade}`);
+    if (note) note.style.display = 'none';
+  }
+}
+
+// ── Class accordion ──────────────────────────────────────────────
+document.querySelectorAll('.class-toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const expanded = btn.getAttribute('aria-expanded') === 'true';
+    btn.setAttribute('aria-expanded', String(!expanded));
+    document.getElementById(btn.getAttribute('aria-controls'))
+            .classList.toggle('open', !expanded);
+  });
+});
+
+// ── Folder toggle ────────────────────────────────────────────────
+function toggleFolder(folder) {
+  const expanded = folder.getAttribute('aria-expanded') === 'true';
+  folder.setAttribute('aria-expanded', String(!expanded));
+  const subtree = folder.parentElement.querySelector('.subtree');
+  if (subtree) subtree.classList.toggle('open', !expanded);
+}
+document.addEventListener('click', e => {
+  const f = e.target.closest('.tree-item.folder');
+  if (f) toggleFolder(f);
+});
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  const f = e.target.closest('.tree-item.folder');
+  if (f) { e.preventDefault(); toggleFolder(f); }
+});
+</script>
 </body>
 </html>
