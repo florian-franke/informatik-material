@@ -1,23 +1,28 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Unterrichtsmaterial</title>
   <style>
     :root {
-      --bg:        #f7f6f2;
-      --surface:   #ffffff;
-      --border:    #e2ddd6;
-      --accent:    #3b6ea5;
-      --text:      #1e1e1e;
-      --muted:     #6b6560;
-      --folder:    #7a5c2e;
-      --file:      #3b6ea5;
-      --hover-bg:  #f0f4fa;
+      --bg: #f7f6f2;
+      --surface: #ffffff;
+      --border: #e2ddd6;
+      --accent: #3b6ea5;
+      --text: #1e1e1e;
+      --muted: #6b6560;
+      --folder: #7a5c2e;
+      --file: #3b6ea5;
+      --hover-bg: #f0f4fa;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       background: var(--bg);
@@ -34,8 +39,18 @@
       color: #fff;
       padding: 2rem 2rem 1.6rem;
     }
-    header h1 { font-size: 1.55rem; font-weight: 700; letter-spacing: -.01em; }
-    header p   { margin-top: .3rem; font-size: .9rem; opacity: .82; }
+
+    header h1 {
+      font-size: 1.55rem;
+      font-weight: 700;
+      letter-spacing: -.01em;
+    }
+
+    header p {
+      margin-top: .3rem;
+      font-size: .9rem;
+      opacity: .82;
+    }
 
     /* ── Main ── */
     main {
@@ -65,8 +80,15 @@
       text-align: left;
       transition: background .15s;
     }
-    .class-toggle:hover { background: var(--hover-bg); }
-    .class-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+    .class-toggle:hover {
+      background: var(--hover-bg);
+    }
+
+    .class-toggle:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: -2px;
+    }
 
     .class-badge {
       background: var(--accent);
@@ -79,15 +101,24 @@
       letter-spacing: .03em;
     }
 
-    .class-label { font-size: 1rem; font-weight: 600; color: var(--text); flex: 1; }
+    .class-label {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+    }
 
     .chevron {
-      width: 18px; height: 18px;
+      width: 18px;
+      height: 18px;
       color: var(--muted);
       transition: transform .22s ease;
       flex-shrink: 0;
     }
-    .class-toggle[aria-expanded="true"] .chevron { transform: rotate(180deg); }
+
+    .class-toggle[aria-expanded="true"] .chevron {
+      transform: rotate(180deg);
+    }
 
     /* ── Panel ── */
     .class-panel {
@@ -95,11 +126,21 @@
       border-top: 1px solid var(--border);
       padding: 1rem 1.25rem 1.25rem;
     }
-    .class-panel.open { display: block; }
+
+    .class-panel.open {
+      display: block;
+    }
 
     /* ── Tree ── */
-    .tree { list-style: none; padding-left: 0; }
-    .tree li { position: relative; }
+    .tree {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .tree li {
+      position: relative;
+    }
+
     .tree .tree {
       padding-left: 1.4rem;
       border-left: 1.5px solid var(--border);
@@ -116,472 +157,544 @@
       user-select: none;
       cursor: default;
     }
+
     .tree-item.folder {
       cursor: pointer;
       font-weight: 600;
       color: var(--folder);
     }
-    .tree-item.folder:hover { background: #fdf5ec; }
-    .tree-item.file  { color: var(--file); }
-    .tree-item.file:hover { background: var(--hover-bg); }
-    .tree-item.placeholder { color: var(--muted); font-style: italic; font-size: .85rem; }
 
-    .icon { font-size: 1rem; flex-shrink: 0; width: 1.2em; text-align: center; }
+    .tree-item.folder:hover {
+      background: #fdf5ec;
+    }
+
+    .tree-item.file {
+      color: var(--file);
+    }
+
+    .tree-item.file:hover {
+      background: var(--hover-bg);
+    }
+
+    .tree-item.placeholder {
+      color: var(--muted);
+      font-style: italic;
+      font-size: .85rem;
+    }
+
+    .icon {
+      font-size: 1rem;
+      flex-shrink: 0;
+      width: 1.2em;
+      text-align: center;
+    }
 
     .folder-chevron {
       margin-left: auto;
-      width: 14px; height: 14px;
+      width: 14px;
+      height: 14px;
       color: var(--muted);
       transition: transform .18s;
       flex-shrink: 0;
     }
-    .tree-item.folder[aria-expanded="true"] .folder-chevron { transform: rotate(90deg); }
 
-    .subtree         { display: none; }
-    .subtree.open    { display: block; }
+    .tree-item.folder[aria-expanded="true"] .folder-chevron {
+      transform: rotate(90deg);
+    }
 
-    .empty-note { font-size: .83rem; color: var(--muted); margin-top: .6rem; padding-left: .2rem; }
+    .subtree {
+      display: none;
+    }
 
-    footer { text-align: center; font-size: .8rem; color: var(--muted); padding-bottom: 2rem; }
+    .subtree.open {
+      display: block;
+    }
+
+    .empty-note {
+      font-size: .83rem;
+      color: var(--muted);
+      margin-top: .6rem;
+      padding-left: .2rem;
+    }
+
+    footer {
+      text-align: center;
+      font-size: .8rem;
+      color: var(--muted);
+      padding-bottom: 2rem;
+    }
 
     @media (max-width: 480px) {
-      header { padding: 1.4rem 1rem 1.2rem; }
-      main   { padding: 0 .75rem 3rem; }
+      header {
+        padding: 1.4rem 1rem 1.2rem;
+      }
+
+      main {
+        padding: 0 .75rem 3rem;
+      }
     }
+
     @media (prefers-reduced-motion: reduce) {
-      .chevron, .folder-chevron { transition: none; }
+
+      .chevron,
+      .folder-chevron {
+        transition: none;
+      }
     }
   </style>
 </head>
+
 <body>
 
-<header>
-  <h1>📚 Unterrichtsmaterial</h1>
-  <p>Die auf dieser Website bereitgestellten Materialien stammen aus verschiedenen Quellen: Ein Teil wurde von mir selbst erstellt, ein weiterer Teil wurde von anderen Lehrkräften zur Verfügung gestellt oder aus dem Unterricht übernommen.</p>
-  <p>Alle Inhalte werden nach bestem Wissen und Gewissen bereitgestellt. Eine Garantie auf Vollständigkeit, Aktualität oder inhaltliche Richtigkeit kann jedoch nicht übernommen werden. Es empfiehlt sich daher, die Materialien stets kritisch zu prüfen und bei Unklarheiten zusätzliche Quellen heranzuziehen.
-</p>
-<p>Die Nutzung der Materialien erfolgt auf eigene Verantwortung.
-</p>
-</header>
+  <header>
+    <h1>📚 Unterrichtsmaterial</h1>
+    <p>Die auf dieser Website bereitgestellten Materialien stammen aus verschiedenen Quellen: Ein Teil wurde von mir
+      selbst erstellt, ein weiterer Teil wurde von anderen Lehrkräften zur Verfügung gestellt oder aus dem Unterricht
+      übernommen.</p>
+    <p>Alle Inhalte werden nach bestem Wissen und Gewissen bereitgestellt. Eine Garantie auf Vollständigkeit, Aktualität
+      oder inhaltliche Richtigkeit kann jedoch nicht übernommen werden. Es empfiehlt sich daher, die Materialien stets
+      kritisch zu prüfen und bei Unklarheiten zusätzliche Quellen heranzuziehen.
+    </p>
+    <p>Die Nutzung der Materialien erfolgt auf eigene Verantwortung.
+    </p>
+  </header>
 
-<main>
+  <main>
 
-  <!-- Klasse 6 -->
-  <div class="class-block">
-    <button class="class-toggle" aria-expanded="false" aria-controls="panel-6">
-      <span class="class-badge">Kl. 6</span>
-      <span class="class-label">Klasse 6 – Natur und Technik</span>
-      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-    </button>
-    <div class="class-panel" id="panel-6">
-      <ul class="tree" id="tree-6"></ul>
-      <p class="empty-note" id="note-6">Noch keine Materialien vorhanden.</p>
+    <!-- Klasse 6 -->
+    <div class="class-block">
+      <button class="class-toggle" aria-expanded="false" aria-controls="panel-6">
+        <span class="class-badge">Kl. 6</span>
+        <span class="class-label">Klasse 6 – Natur und Technik</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+      <div class="class-panel" id="panel-6">
+        <ul class="tree" id="tree-6"></ul>
+        <p class="empty-note" id="note-6">Noch keine Materialien vorhanden.</p>
+      </div>
     </div>
-  </div>
 
-  <!-- Klasse 7 -->
-  <div class="class-block">
-    <button class="class-toggle" aria-expanded="false" aria-controls="panel-7">
-      <span class="class-badge">Kl. 7</span>
-      <span class="class-label">Klasse 7 – Natur und Technik</span>
-      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-    </button>
-    <div class="class-panel" id="panel-7">
-      <ul class="tree" id="tree-7"></ul>
-      <p class="empty-note" id="note-7">Noch keine Materialien vorhanden.</p>
+    <!-- Klasse 7 -->
+    <div class="class-block">
+      <button class="class-toggle" aria-expanded="false" aria-controls="panel-7">
+        <span class="class-badge">Kl. 7</span>
+        <span class="class-label">Klasse 7 – Natur und Technik</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+      <div class="class-panel" id="panel-7">
+        <ul class="tree" id="tree-7"></ul>
+        <p class="empty-note" id="note-7">Noch keine Materialien vorhanden.</p>
+      </div>
     </div>
-  </div>
 
-  <!-- Klasse 9 -->
-  <div class="class-block">
-    <button class="class-toggle" aria-expanded="false" aria-controls="panel-9">
-      <span class="class-badge">Kl. 9</span>
-      <span class="class-label">Klasse 9 - Informatik </span>
-      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-    </button>
-    <div class="class-panel" id="panel-9">
-      <ul class="tree" id="tree-9"></ul>
-      <p class="empty-note" id="note-9">Noch keine Materialien vorhanden.</p>
+    <!-- Klasse 9 -->
+    <div class="class-block">
+      <button class="class-toggle" aria-expanded="false" aria-controls="panel-9">
+        <span class="class-badge">Kl. 9</span>
+        <span class="class-label">Klasse 9 - Informatik </span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+      <div class="class-panel" id="panel-9">
+        <ul class="tree" id="tree-9"></ul>
+        <p class="empty-note" id="note-9">Noch keine Materialien vorhanden.</p>
+      </div>
     </div>
-  </div>
 
-  <!-- Klasse 10 -->
-  <div class="class-block">
-    <button class="class-toggle" aria-expanded="false" aria-controls="panel-10">
-      <span class="class-badge">Kl. 10</span>
-      <span class="class-label">Klasse 10 - Informatik </span>
-      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-    </button>
-    <div class="class-panel" id="panel-10">
-      <ul class="tree" id="tree-10"></ul>
-      <p class="empty-note" id="note-10">Noch keine Materialien vorhanden.</p>
+    <!-- Klasse 10 -->
+    <div class="class-block">
+      <button class="class-toggle" aria-expanded="false" aria-controls="panel-10">
+        <span class="class-badge">Kl. 10</span>
+        <span class="class-label">Klasse 10 - Informatik </span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+      <div class="class-panel" id="panel-10">
+        <ul class="tree" id="tree-10"></ul>
+        <p class="empty-note" id="note-10">Noch keine Materialien vorhanden.</p>
+      </div>
     </div>
-  </div>
 
-  <!-- Klasse 11 -->
-  <div class="class-block">
-    <button class="class-toggle" aria-expanded="false" aria-controls="panel-11">
-      <span class="class-badge">Kl. 11</span>
-      <span class="class-label">Klasse 11 - Informatik </span>
-      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-    </button>
-    <div class="class-panel" id="panel-11">
-      <ul class="tree" id="tree-11"></ul>
-      <p class="empty-note" id="note-11">Noch keine Materialien vorhanden.</p>
+    <!-- Klasse 11 -->
+    <div class="class-block">
+      <button class="class-toggle" aria-expanded="false" aria-controls="panel-11">
+        <span class="class-badge">Kl. 11</span>
+        <span class="class-label">Klasse 11 - Informatik </span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+      <div class="class-panel" id="panel-11">
+        <ul class="tree" id="tree-11"></ul>
+        <p class="empty-note" id="note-11">Noch keine Materialien vorhanden.</p>
+      </div>
     </div>
-  </div>
 
-  <!-- Klasse 12 -->
-  <div class="class-block">
-    <button class="class-toggle" aria-expanded="false" aria-controls="panel-12">
-      <span class="class-badge">Kl. 12</span>
-      <span class="class-label">Klasse 12 - Informatik </span>
-      <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-    </button>
-    <div class="class-panel" id="panel-12">
-      <ul class="tree" id="tree-12"></ul>
-      <p class="empty-note" id="note-12">Noch keine Materialien vorhanden.</p>
+    <!-- Klasse 12 -->
+    <div class="class-block">
+      <button class="class-toggle" aria-expanded="false" aria-controls="panel-12">
+        <span class="class-badge">Kl. 12</span>
+        <span class="class-label">Klasse 12 - Informatik </span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+      <div class="class-panel" id="panel-12">
+        <ul class="tree" id="tree-12"></ul>
+        <p class="empty-note" id="note-12">Noch keine Materialien vorhanden.</p>
+      </div>
     </div>
-  </div>
 
-</main>
+  </main>
 
-<footer>Unterrichtsmaterial · Alle Rechte vorbehalten</footer>
+  <footer>Unterrichtsmaterial · Alle Rechte vorbehalten</footer>
 
-<script>
-// ═══════════════════════════════════════════════════════════════════
-//  MATERIALSTRUKTUR
-//  So funktioniert das Schema:
-//
-//  Ordner:  { name: "Anzeigename", files: [ ...Inhalt... ] }
-//  Datei:   { name: "Dateiname.pdf", path: "pfad/zur/datei.pdf" }
-//
-//  Ordner können beliebig tief geschachtelt werden.
-//  Leeres files-Array [] = Ordner ist noch leer (zeigt Platzhalter).
-//
-//  GitHub-Pfade immer relativ zur index.html angeben, z.B.:
-//    "inf6/1-informationsdarstellung/material/AB01.pdf"
-// ═══════════════════════════════════════════════════════════════════
-const material = {
+  <script>
+    // ═══════════════════════════════════════════════════════════════════
+    //  MATERIALSTRUKTUR
+    //  So funktioniert das Schema:
+    //
+    //  Ordner:  { name: "Anzeigename", files: [ ...Inhalt... ] }
+    //  Datei:   { name: "Dateiname.pdf", path: "pfad/zur/datei.pdf" }
+    //
+    //  Ordner können beliebig tief geschachtelt werden.
+    //  Leeres files-Array [] = Ordner ist noch leer (zeigt Platzhalter).
+    //
+    //  GitHub-Pfade immer relativ zur index.html angeben, z.B.:
+    //    "inf6/1-informationsdarstellung/material/AB01.pdf"
+    // ═══════════════════════════════════════════════════════════════════
+    const material = {
 
-  // ── Klasse 6 ────────────────────────────────────────────────────
-  6: [
-    {
-      name: "1-Informationsdarstellung",
-      files: [
-        { name: "AngelSilence-Gutschein.docx", path: "inf6/1-Informationsdarstellung/AngelSilence-Gutschein.docx" },
-        { name: "Schilder-LineUP-Schulweg-Gebdatum.docx", path: "inf6/1-Informationsdarstellung/Schilder-LineUP-Schulweg-Gebdatum.docx" },
-        { name: "Was-ist-Informatik.pptx", path: "inf6/1-Informationsdarstellung/Was-ist-Informatik.pptx" },
+      // ── Klasse 6 ────────────────────────────────────────────────────
+      6: [
         {
-          name: "Pixel-Vektorgrafiken",
+          name: "1-Informationsdarstellung",
           files: [
-            { name: "AB-Objektkarten.docx", path: "inf6/1-Informationsdarstellung/Pixel-Vektorgrafiken/AB-Objektkarten.docx" },
-            { name: "AB-Zusatz.docx", path: "inf6/1-Informationsdarstellung/Pixel-Vektorgrafiken/AB-Zusatz.docx" },
-            { name: "AB1-Pixelgrafik.docx", path: "inf6/1-Informationsdarstellung/Pixel-Vektorgrafiken/AB1-Pixelgrafik.docx" },
-            { name: "AB2-Vektorgrafik.docx", path: "inf6/1-Informationsdarstellung/Pixel-Vektorgrafiken/AB2-Vektorgrafik.docx" },
-            { name: "AB3-Klassen-Vektorgrafik.docx", path: "inf6/1-Informationsdarstellung/Pixel-Vektorgrafiken/AB3-Klassen-Vektorgrafik.docx" },
-            { name: "AB4-Objekte-Übung.docx", path: "inf6/1-Informationsdarstellung/Pixel-Vektorgrafiken/AB4-Objekte-Übung.docx" },
-            { name: "AB5-Methoden-EOS.docx", path: "inf6/1-Informationsdarstellung/Pixel-Vektorgrafiken/AB5-Methoden-EOS.docx" },
-            { name: "Inf6-Methoden.pptx", path: "inf6/1-Informationsdarstellung/Pixel-Vektorgrafiken/Inf6-Methoden.pptx" },
-            { name: "Inf6-Objekte.pptx", path: "inf6/1-Informationsdarstellung/Pixel-Vektorgrafiken/Inf6-Objekte.pptx" },
-            { name: "Inf6-Pixelgrafik.pptx", path: "inf6/1-Informationsdarstellung/Pixel-Vektorgrafiken/Inf6-Pixelgrafik.pptx" },
-            { name: "Inf6-Vektorgrafiken.pptx", path: "inf6/1-Informationsdarstellung/Pixel-Vektorgrafiken/Inf6-Vektorgrafiken.pptx" },
-            { name: "Olympiaringe.odg", path: "inf6/1-Informationsdarstellung/Pixel-Vektorgrafiken/Olympiaringe.odg" },
-            { name: "Smiley.txt", path: "inf6/1-Informationsdarstellung/Pixel-Vektorgrafiken/Smiley.txt" },
-            { name: "Wdh-4-Ecken.docx", path: "inf6/1-Informationsdarstellung/Pixel-Vektorgrafiken/Wdh-4-Ecken.docx" },
-            { name: "hausUndSonne.eos", path: "inf6/1-Informationsdarstellung/Pixel-Vektorgrafiken/hausUndSonne.eos" }
-          ]
-        },
-        {
-          name: "Textdokumente",
-          files: [
-            { name: "AB-Klassen-Textverarbeitung.docx", path: "inf6/1-Informationsdarstellung/Textdokumente/AB-Klassen-Textverarbeitung.docx" },
-            { name: "AB-Textdokumente-Objekte.docx", path: "inf6/1-Informationsdarstellung/Textdokumente/AB-Textdokumente-Objekte.docx" },
-            { name: "AB-Textdokumente-Objekte.pdf", path: "inf6/1-Informationsdarstellung/Textdokumente/AB-Textdokumente-Objekte.pdf" },
-            { name: "Absatz-Formatiert.docx", path: "inf6/1-Informationsdarstellung/Textdokumente/Absatz-Formatiert.docx" },
-            { name: "Absatz.docx", path: "inf6/1-Informationsdarstellung/Textdokumente/Absatz.docx" },
-            { name: "Inf6-Wdh-Formatierung.pptx", path: "inf6/1-Informationsdarstellung/Textdokumente/Inf6-Wdh-Formatierung.pptx" },
-            { name: "Inf6-Wdh-KK-OK.pptx", path: "inf6/1-Informationsdarstellung/Textdokumente/Inf6-Wdh-KK-OK.pptx" }
-          ]
-        }
-      ]
-    },
-    {
-      name: "2-Präsentation",
-      files: [
-        { name: "Merkmale-guten-Präsentation-Vortrag.docx", path: "inf6/2-Präsentation/Merkmale-guten-Präsentation-Vortrag.docx" },
-        { name: "Merkmale-guten-Präsentation.docx", path: "inf6/2-Präsentation/Merkmale-guten-Präsentation.docx" },
-        { name: "Schlechte PPP.ppt", path: "inf6/2-Präsentation/Schlechte PPP.ppt" },
-        { name: "Schlechte-PPP-Fragen.docx", path: "inf6/2-Präsentation/Schlechte-PPP-Fragen.docx" },
-        { name: "Weißer Hai.odp", path: "inf6/2-Präsentation/Weißer Hai.odp" }
-      ]
-    },
-    {
-      name: "3-Hierarchische-Strukturen",
-      files: [
-        { name: "Inf6-Informationsstrukturen.pptx", path: "inf6/3-Hierarchische-Strukturen/Inf6-Informationsstrukturen.pptx" },
-        {
-          name: "1-Einführung-Dateisystem",
-          files: [
-            { name: "6a.txt", path: "inf6/3-Hierarchische-Strukturen/1-Einführung-Dateisystem/6a.txt" },
-            { name: "AB-Baumdiagramm.docx", path: "inf6/3-Hierarchische-Strukturen/1-Einführung-Dateisystem/AB-Baumdiagramm.docx" },
+            { name: "AngelSilence-Gutschein.docx", path: "inf6/1-Informationsdarstellung/AngelSilence-Gutschein.docx" },
+            { name: "Schilder-LineUP-Schulweg-Gebdatum.docx", path: "inf6/1-Informationsdarstellung/Schilder-LineUP-Schulweg-Gebdatum.docx" },
+            { name: "Was-ist-Informatik.pptx", path: "inf6/1-Informationsdarstellung/Was-ist-Informatik.pptx" },
             {
-              name: "vonAnna",
+              name: "Pixel-Vektorgrafiken",
               files: [
-                { name: "annasMission.txt", path: "inf6/3-Hierarchische-Strukturen/1-Einführung-Dateisystem/vonAnna/annasMission.txt" }
+                { name: "AB-Objektkarten.docx", path: "inf6/1-Informationsdarstellung/Pixel-Vektorgrafiken/AB-Objektkarten.docx" },
+                { name: "AB-Zusatz.docx", path: "inf6/1-Informationsdarstellung/Pixel-Vektorgrafiken/AB-Zusatz.docx" },
+                { name: "AB1-Pixelgrafik.docx", path: "inf6/1-Informationsdarstellung/Pixel-Vektorgrafiken/AB1-Pixelgrafik.docx" },
+                { name: "AB2-Vektorgrafik.docx", path: "inf6/1-Informationsdarstellung/Pixel-Vektorgrafiken/AB2-Vektorgrafik.docx" },
+                { name: "AB3-Klassen-Vektorgrafik.docx", path: "inf6/1-Informationsdarstellung/Pixel-Vektorgrafiken/AB3-Klassen-Vektorgrafik.docx" },
+                { name: "AB4-Objekte-Übung.docx", path: "inf6/1-Informationsdarstellung/Pixel-Vektorgrafiken/AB4-Objekte-Übung.docx" },
+                { name: "AB5-Methoden-EOS.docx", path: "inf6/1-Informationsdarstellung/Pixel-Vektorgrafiken/AB5-Methoden-EOS.docx" },
+                { name: "Inf6-Methoden.pptx", path: "inf6/1-Informationsdarstellung/Pixel-Vektorgrafiken/Inf6-Methoden.pptx" },
+                { name: "Inf6-Objekte.pptx", path: "inf6/1-Informationsdarstellung/Pixel-Vektorgrafiken/Inf6-Objekte.pptx" },
+                { name: "Inf6-Pixelgrafik.pptx", path: "inf6/1-Informationsdarstellung/Pixel-Vektorgrafiken/Inf6-Pixelgrafik.pptx" },
+                { name: "Inf6-Vektorgrafiken.pptx", path: "inf6/1-Informationsdarstellung/Pixel-Vektorgrafiken/Inf6-Vektorgrafiken.pptx" },
+                { name: "Olympiaringe.odg", path: "inf6/1-Informationsdarstellung/Pixel-Vektorgrafiken/Olympiaringe.odg" },
+                { name: "Smiley.txt", path: "inf6/1-Informationsdarstellung/Pixel-Vektorgrafiken/Smiley.txt" },
+                { name: "Wdh-4-Ecken.docx", path: "inf6/1-Informationsdarstellung/Pixel-Vektorgrafiken/Wdh-4-Ecken.docx" },
+                { name: "hausUndSonne.eos", path: "inf6/1-Informationsdarstellung/Pixel-Vektorgrafiken/hausUndSonne.eos" }
+              ]
+            },
+            {
+              name: "Textdokumente",
+              files: [
+                { name: "AB-Klassen-Textverarbeitung.docx", path: "inf6/1-Informationsdarstellung/Textdokumente/AB-Klassen-Textverarbeitung.docx" },
+                { name: "AB-Textdokumente-Objekte.docx", path: "inf6/1-Informationsdarstellung/Textdokumente/AB-Textdokumente-Objekte.docx" },
+                { name: "AB-Textdokumente-Objekte.pdf", path: "inf6/1-Informationsdarstellung/Textdokumente/AB-Textdokumente-Objekte.pdf" },
+                { name: "Absatz-Formatiert.docx", path: "inf6/1-Informationsdarstellung/Textdokumente/Absatz-Formatiert.docx" },
+                { name: "Absatz.docx", path: "inf6/1-Informationsdarstellung/Textdokumente/Absatz.docx" },
+                { name: "Inf6-Wdh-Formatierung.pptx", path: "inf6/1-Informationsdarstellung/Textdokumente/Inf6-Wdh-Formatierung.pptx" },
+                { name: "Inf6-Wdh-KK-OK.pptx", path: "inf6/1-Informationsdarstellung/Textdokumente/Inf6-Wdh-KK-OK.pptx" }
               ]
             }
           ]
         },
         {
-          name: "2-Ordnerbaum",
+          name: "2-Präsentation",
           files: [
-            { name: "Ordnerbaum-Schnipsel2.docx", path: "inf6/3-Hierarchische-Strukturen/2-Ordnerbaum/Ordnerbaum-Schnipsel2.docx" },
-            { name: "Übung-Ordnerbaum-Suche-Anna.docx", path: "inf6/3-Hierarchische-Strukturen/2-Ordnerbaum/Übung-Ordnerbaum-Suche-Anna.docx" }
+            { name: "Merkmale-guten-Präsentation-Vortrag.docx", path: "inf6/2-Präsentation/Merkmale-guten-Präsentation-Vortrag.docx" },
+            { name: "Merkmale-guten-Präsentation.docx", path: "inf6/2-Präsentation/Merkmale-guten-Präsentation.docx" },
+            { name: "Schlechte PPP.ppt", path: "inf6/2-Präsentation/Schlechte PPP.ppt" },
+            { name: "Schlechte-PPP-Fragen.docx", path: "inf6/2-Präsentation/Schlechte-PPP-Fragen.docx" },
+            { name: "Weißer Hai.odp", path: "inf6/2-Präsentation/Weißer Hai.odp" }
           ]
         },
         {
-          name: "3-Pfade",
+          name: "3-Hierarchische-Strukturen",
           files: [
-            { name: "AB3-Dateipfade-V6.docx", path: "inf6/3-Hierarchische-Strukturen/3-Pfade/AB3-Dateipfade-V6.docx" },
-            { name: "AB3-Pfade-im-Dateisystem-Lsg.pdf", path: "inf6/3-Hierarchische-Strukturen/3-Pfade/AB3-Pfade-im-Dateisystem-Lsg.pdf" },
-            { name: "Zertifikat-Netzwerk-Ninja.pdf", path: "inf6/3-Hierarchische-Strukturen/3-Pfade/Zertifikat-Netzwerk-Ninja.pdf" },
+            { name: "Inf6-Informationsstrukturen.pptx", path: "inf6/3-Hierarchische-Strukturen/Inf6-Informationsstrukturen.pptx" },
             {
-              name: "Material-im-weißen-Umschlag",
+              name: "1-Einführung-Dateisystem",
               files: [
-                { name: "Baumdiagramm-Pfad-einzeichnen.pdf", path: "inf6/3-Hierarchische-Strukturen/3-Pfade/Material-im-weißen-Umschlag/Baumdiagramm-Pfad-einzeichnen.pdf" },
-                { name: "Zettel-Pfad-Begriffe.pdf", path: "inf6/3-Hierarchische-Strukturen/3-Pfade/Material-im-weißen-Umschlag/Zettel-Pfad-Begriffe.pdf" }
-              ]
-            },
-            {
-              name: "Schnitzeljagd",
-              files: [
-                { name: "start.txt", path: "inf6/3-Hierarchische-Strukturen/3-Pfade/Schnitzeljagd/start.txt" },
+                { name: "6a.txt", path: "inf6/3-Hierarchische-Strukturen/1-Einführung-Dateisystem/6a.txt" },
+                { name: "AB-Baumdiagramm.docx", path: "inf6/3-Hierarchische-Strukturen/1-Einführung-Dateisystem/AB-Baumdiagramm.docx" },
                 {
-                  name: "linkesRegal",
+                  name: "vonAnna",
                   files: [
-                    {
-                      name: "mitteBlaueKiste",
-                      files: [
-                        { name: "anweisung.txt", path: "inf6/3-Hierarchische-Strukturen/3-Pfade/Schnitzeljagd/linkesRegal/mitteBlaueKiste/anweisung.txt" }
-                      ]
-                    },
-                    {
-                      name: "obenRoteKiste",
-                      files: [
-                        { name: "Anweisung.txt", path: "inf6/3-Hierarchische-Strukturen/3-Pfade/Schnitzeljagd/linkesRegal/obenRoteKiste/Anweisung.txt" }
-                      ]
-                    }
+                    { name: "annasMission.txt", path: "inf6/3-Hierarchische-Strukturen/1-Einführung-Dateisystem/vonAnna/annasMission.txt" }
                   ]
                 }
               ]
             },
             {
-              name: "Schnitzeljagd-Level2",
+              name: "2-Ordnerbaum",
               files: [
-                { name: "start.txt", path: "inf6/3-Hierarchische-Strukturen/3-Pfade/Schnitzeljagd-Level2/start.txt" },
+                { name: "Ordnerbaum-Schnipsel2.docx", path: "inf6/3-Hierarchische-Strukturen/2-Ordnerbaum/Ordnerbaum-Schnipsel2.docx" },
+                { name: "Übung-Ordnerbaum-Suche-Anna.docx", path: "inf6/3-Hierarchische-Strukturen/2-Ordnerbaum/Übung-Ordnerbaum-Suche-Anna.docx" }
+              ]
+            },
+            {
+              name: "3-Pfade",
+              files: [
+                { name: "AB3-Dateipfade-V6.docx", path: "inf6/3-Hierarchische-Strukturen/3-Pfade/AB3-Dateipfade-V6.docx" },
+                { name: "AB3-Pfade-im-Dateisystem-Lsg.pdf", path: "inf6/3-Hierarchische-Strukturen/3-Pfade/AB3-Pfade-im-Dateisystem-Lsg.pdf" },
+                { name: "Zertifikat-Netzwerk-Ninja.pdf", path: "inf6/3-Hierarchische-Strukturen/3-Pfade/Zertifikat-Netzwerk-Ninja.pdf" },
                 {
-                  name: "mittleresRegal",
+                  name: "Material-im-weißen-Umschlag",
                   files: [
+                    { name: "Baumdiagramm-Pfad-einzeichnen.pdf", path: "inf6/3-Hierarchische-Strukturen/3-Pfade/Material-im-weißen-Umschlag/Baumdiagramm-Pfad-einzeichnen.pdf" },
+                    { name: "Zettel-Pfad-Begriffe.pdf", path: "inf6/3-Hierarchische-Strukturen/3-Pfade/Material-im-weißen-Umschlag/Zettel-Pfad-Begriffe.pdf" }
+                  ]
+                },
+                {
+                  name: "Schnitzeljagd",
+                  files: [
+                    { name: "start.txt", path: "inf6/3-Hierarchische-Strukturen/3-Pfade/Schnitzeljagd/start.txt" },
                     {
-                      name: "obenBlaueKiste",
+                      name: "linkesRegal",
                       files: [
-                        { name: "anweisung.txt", path: "inf6/3-Hierarchische-Strukturen/3-Pfade/Schnitzeljagd-Level2/mittleresRegal/obenBlaueKiste/anweisung.txt" }
-                      ]
-                    },
-                    {
-                      name: "obenGrüneKiste",
-                      files: [
-                        { name: "anweisung.txt", path: "inf6/3-Hierarchische-Strukturen/3-Pfade/Schnitzeljagd-Level2/mittleresRegal/obenGrüneKiste/anweisung.txt" }
-                      ]
-                    },
-                    {
-                      name: "obenRoteKiste",
-                      files: [
-                        { name: "Anweisung.txt", path: "inf6/3-Hierarchische-Strukturen/3-Pfade/Schnitzeljagd-Level2/mittleresRegal/obenRoteKiste/Anweisung.txt" }
+                        {
+                          name: "mitteBlaueKiste",
+                          files: [
+                            { name: "anweisung.txt", path: "inf6/3-Hierarchische-Strukturen/3-Pfade/Schnitzeljagd/linkesRegal/mitteBlaueKiste/anweisung.txt" }
+                          ]
+                        },
+                        {
+                          name: "obenRoteKiste",
+                          files: [
+                            { name: "Anweisung.txt", path: "inf6/3-Hierarchische-Strukturen/3-Pfade/Schnitzeljagd/linkesRegal/obenRoteKiste/Anweisung.txt" }
+                          ]
+                        }
                       ]
                     }
                   ]
                 },
                 {
-                  name: "rechtesRegal",
+                  name: "Schnitzeljagd-Level2",
                   files: [
+                    { name: "start.txt", path: "inf6/3-Hierarchische-Strukturen/3-Pfade/Schnitzeljagd-Level2/start.txt" },
                     {
-                      name: "UntenGelbeKiste",
+                      name: "mittleresRegal",
                       files: [
-                        { name: "anweisung.txt", path: "inf6/3-Hierarchische-Strukturen/3-Pfade/Schnitzeljagd-Level2/rechtesRegal/UntenGelbeKiste/anweisung.txt" }
+                        {
+                          name: "obenBlaueKiste",
+                          files: [
+                            { name: "anweisung.txt", path: "inf6/3-Hierarchische-Strukturen/3-Pfade/Schnitzeljagd-Level2/mittleresRegal/obenBlaueKiste/anweisung.txt" }
+                          ]
+                        },
+                        {
+                          name: "obenGrüneKiste",
+                          files: [
+                            { name: "anweisung.txt", path: "inf6/3-Hierarchische-Strukturen/3-Pfade/Schnitzeljagd-Level2/mittleresRegal/obenGrüneKiste/anweisung.txt" }
+                          ]
+                        },
+                        {
+                          name: "obenRoteKiste",
+                          files: [
+                            { name: "Anweisung.txt", path: "inf6/3-Hierarchische-Strukturen/3-Pfade/Schnitzeljagd-Level2/mittleresRegal/obenRoteKiste/Anweisung.txt" }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      name: "rechtesRegal",
+                      files: [
+                        {
+                          name: "UntenGelbeKiste",
+                          files: [
+                            { name: "anweisung.txt", path: "inf6/3-Hierarchische-Strukturen/3-Pfade/Schnitzeljagd-Level2/rechtesRegal/UntenGelbeKiste/anweisung.txt" }
+                          ]
+                        }
                       ]
                     }
                   ]
                 }
               ]
+            },
+            {
+              name: "4-Klassenkarte",
+              files: [
+                { name: "AB4-Klassenkarte-ORDNER-DATEI-V2.docx", path: "inf6/3-Hierarchische-Strukturen/4-Klassenkarte/AB4-Klassenkarte-ORDNER-DATEI-V2.docx" },
+                { name: "enthält-Beziehung.drawio", path: "inf6/3-Hierarchische-Strukturen/4-Klassenkarte/enthält-Beziehung.drawio" }
+              ]
             }
           ]
         },
         {
-          name: "4-Klassenkarte",
+          name: "LNWs",
           files: [
-            { name: "AB4-Klassenkarte-ORDNER-DATEI-V2.docx", path: "inf6/3-Hierarchische-Strukturen/4-Klassenkarte/AB4-Klassenkarte-ORDNER-DATEI-V2.docx" },
-            { name: "enthält-Beziehung.drawio", path: "inf6/3-Hierarchische-Strukturen/4-Klassenkarte/enthält-Beziehung.drawio" }
+            { name: "Inf6-akL-Pfade-Lsg.docx", path: "inf6/LNWs/Inf6-akL-Pfade-Lsg.docx" },
+            { name: "Inf6-akL-Pfade-mitBaumdiagramm-V2.docx", path: "inf6/LNWs/Inf6-akL-Pfade-mitBaumdiagramm-V2.docx" }
+          ]
+        }
+      ],
+
+      // ── Klasse 7 ────────────────────────────────────────────────────
+      7: [
+        {
+          name: "1 – Unterkapitel 1",           // ← Namen anpassen
+          files: [
+            {
+              name: "Material",
+              files: []
+            },
+            {
+              name: "Lösungen",
+              files: []
+            },
+            {
+              name: "Leistungsnachweise",
+              files: []
+            }
+          ]
+        },
+        {
+          name: "2 – Unterkapitel 2",           // ← Namen anpassen
+          files: [
+            {
+              name: "Material",
+              files: []
+            },
+            {
+              name: "Lösungen",
+              files: []
+            },
+            {
+              name: "Leistungsnachweise",
+              files: []
+            }
+          ]
+        }
+      ],
+
+      // ── Klassen 8–12 (gleiche Struktur, nach Bedarf erweitern) ──────
+      8: [
+        {
+          name: "1 – Unterkapitel 1",
+          files: [
+            { name: "Material", files: [] },
+            { name: "Lösungen", files: [] },
+            { name: "Leistungsnachweise", files: [] }
+          ]
+        },
+        {
+          name: "2 – Unterkapitel 2",
+          files: [
+            { name: "Material", files: [] },
+            { name: "Lösungen", files: [] },
+            { name: "Leistungsnachweise", files: [] }
+          ]
+        }
+      ],
+
+      9: [
+        {
+          name: "1 – Unterkapitel 1",
+          files: [
+            { name: "Material", files: [] },
+            { name: "Lösungen", files: [] },
+            { name: "Leistungsnachweise", files: [] }
+          ]
+        },
+        {
+          name: "2 – Unterkapitel 2",
+          files: [
+            { name: "Material", files: [] },
+            { name: "Lösungen", files: [] },
+            { name: "Leistungsnachweise", files: [] }
+          ]
+        }
+      ],
+
+      10: [
+        {
+          name: "1 – Unterkapitel 1",
+          files: [
+            { name: "Material", files: [] },
+            { name: "Lösungen", files: [] },
+            { name: "Leistungsnachweise", files: [] }
+          ]
+        },
+        {
+          name: "2 – Unterkapitel 2",
+          files: [
+            { name: "Material", files: [] },
+            { name: "Lösungen", files: [] },
+            { name: "Leistungsnachweise", files: [] }
+          ]
+        }
+      ],
+
+      11: [
+        {
+          name: "1 – Unterkapitel 1",
+          files: [
+            { name: "Material", files: [] },
+            { name: "Lösungen", files: [] },
+            { name: "Leistungsnachweise", files: [] }
+          ]
+        },
+        {
+          name: "2 – Unterkapitel 2",
+          files: [
+            { name: "Material", files: [] },
+            { name: "Lösungen", files: [] },
+            { name: "Leistungsnachweise", files: [] }
+          ]
+        }
+      ],
+
+      12: [
+        {
+          name: "1 – Unterkapitel 1",
+          files: [
+            { name: "Material", files: [] },
+            { name: "Lösungen", files: [] },
+            { name: "Leistungsnachweise", files: [] }
+          ]
+        },
+        {
+          name: "2 – Unterkapitel 2",
+          files: [
+            { name: "Material", files: [] },
+            { name: "Lösungen", files: [] },
+            { name: "Leistungsnachweise", files: [] }
           ]
         }
       ]
-    },
-    {
-      name: "LNWs",
-      files: [
-        { name: "Inf6-akL-Pfade-Lsg.docx", path: "inf6/LNWs/Inf6-akL-Pfade-Lsg.docx" },
-        { name: "Inf6-akL-Pfade-mitBaumdiagramm-V2.docx", path: "inf6/LNWs/Inf6-akL-Pfade-mitBaumdiagramm-V2.docx" }
-      ]
-    }
-  ],
+    };
 
-  // ── Klasse 7 ────────────────────────────────────────────────────
-  7: [
-    {
-      name: "1 – Unterkapitel 1",           // ← Namen anpassen
-      files: [
-        {
-          name: "Material",
-          files: []
-        },
-        {
-          name: "Lösungen",
-          files: []
-        },
-        {
-          name: "Leistungsnachweise",
-          files: []
-        }
-      ]
-    },
-    {
-      name: "2 – Unterkapitel 2",           // ← Namen anpassen
-      files: [
-        {
-          name: "Material",
-          files: []
-        },
-        {
-          name: "Lösungen",
-          files: []
-        },
-        {
-          name: "Leistungsnachweise",
-          files: []
-        }
-      ]
-    }
-  ],
-
-  // ── Klassen 8–12 (gleiche Struktur, nach Bedarf erweitern) ──────
-  8: [
-    {
-      name: "1 – Unterkapitel 1",
-      files: [
-        { name: "Material",           files: [] },
-        { name: "Lösungen",           files: [] },
-        { name: "Leistungsnachweise", files: [] }
-      ]
-    },
-    {
-      name: "2 – Unterkapitel 2",
-      files: [
-        { name: "Material",           files: [] },
-        { name: "Lösungen",           files: [] },
-        { name: "Leistungsnachweise", files: [] }
-      ]
-    }
-  ],
-
-  9: [
-    {
-      name: "1 – Unterkapitel 1",
-      files: [
-        { name: "Material",           files: [] },
-        { name: "Lösungen",           files: [] },
-        { name: "Leistungsnachweise", files: [] }
-      ]
-    },
-    {
-      name: "2 – Unterkapitel 2",
-      files: [
-        { name: "Material",           files: [] },
-        { name: "Lösungen",           files: [] },
-        { name: "Leistungsnachweise", files: [] }
-      ]
-    }
-  ],
-
-  10: [
-    {
-      name: "1 – Unterkapitel 1",
-      files: [
-        { name: "Material",           files: [] },
-        { name: "Lösungen",           files: [] },
-        { name: "Leistungsnachweise", files: [] }
-      ]
-    },
-    {
-      name: "2 – Unterkapitel 2",
-      files: [
-        { name: "Material",           files: [] },
-        { name: "Lösungen",           files: [] },
-        { name: "Leistungsnachweise", files: [] }
-      ]
-    }
-  ],
-
-  11: [
-    {
-      name: "1 – Unterkapitel 1",
-      files: [
-        { name: "Material",           files: [] },
-        { name: "Lösungen",           files: [] },
-        { name: "Leistungsnachweise", files: [] }
-      ]
-    },
-    {
-      name: "2 – Unterkapitel 2",
-      files: [
-        { name: "Material",           files: [] },
-        { name: "Lösungen",           files: [] },
-        { name: "Leistungsnachweise", files: [] }
-      ]
-    }
-  ],
-
-  12: [
-    {
-      name: "1 – Unterkapitel 1",
-      files: [
-        { name: "Material",           files: [] },
-        { name: "Lösungen",           files: [] },
-        { name: "Leistungsnachweise", files: [] }
-      ]
-    },
-    {
-      name: "2 – Unterkapitel 2",
-      files: [
-        { name: "Material",           files: [] },
-        { name: "Lösungen",           files: [] },
-        { name: "Leistungsnachweise", files: [] }
-      ]
-    }
-  ]
-};
-
-// ── Tree renderer ────────────────────────────────────────────────
-function buildTree(items) {
-  if (!items || items.length === 0) return '';
-  let html = '<ul class="tree subtree open">';
-  for (const item of items) {
-    if (item.files !== undefined) {
-      const hasChildren = item.files.length > 0;
-      const sub = hasChildren ? buildTree(item.files) : '';
-      html += `<li>
+    // ── Tree renderer ────────────────────────────────────────────────
+    /*function buildTree(items) {
+      if (!items || items.length === 0) return '';
+      let html = '<ul class="tree subtree open">';
+      for (const item of items) {
+        if (item.files !== undefined) {
+          const hasChildren = item.files.length > 0;
+          const sub = hasChildren ? buildTree(item.files) : '';
+          html += `<li>
         <div class="tree-item folder" role="button" tabindex="0"
-             aria-expanded="${hasChildren ? 'true' : 'false'}"
+             aria-expanded="false"
              aria-label="${item.name} öffnen">
           <span class="icon">📁</span>
           <span>${item.name}</span>
@@ -591,71 +704,116 @@ function buildTree(items) {
             <polyline points="9 6 15 12 9 18"/>
           </svg>
         </div>`;
-      if (hasChildren) {
-        html += sub;
-      } else {
-        html += `<ul class="tree subtree">
+          if (hasChildren) {
+            html += sub;
+          } else {
+            html += `<ul class="tree subtree">
           <li><div class="tree-item placeholder"><span class="icon">–</span>Noch keine Dateien</div></li>
         </ul>`;
-      }
-      html += `</li>`;
-    } else {
-      const ext  = item.name.split('.').pop().toLowerCase();
-      const icon = ext === 'pdf' ? '📄'
-                 : (ext === 'docx' || ext === 'doc') ? '📝'
-                 : ext === 'pptx' ? '📊' : '📎';
-      html += `<li>
+          }
+          html += `</li>`;
+        } else {
+          const ext = item.name.split('.').pop().toLowerCase();
+          const icon = ext === 'pdf' ? '📄'
+            : (ext === 'docx' || ext === 'doc') ? '📝'
+              : ext === 'pptx' ? '📊' : '📎';
+          html += `<li>
         <div class="tree-item file">
           <span class="icon">${icon}</span>
           <a href="${item.path}" target="_blank" rel="noopener">${item.name}</a>
         </div>
       </li>`;
+        }
+      }
+      html += '</ul>';
+      return html;
+    }*/
+    function buildTree(items, isRoot = false) {
+      if (!items || items.length === 0) return '';
+      let html = `<ul class="tree subtree${isRoot ? ' open' : ''}">`;
+      for (const item of items) {
+        if (item.files !== undefined) {
+          const hasChildren = item.files.length > 0;
+          const sub = hasChildren ? buildTree(item.files, false) : '';
+          html += `<li>
+        <div class="tree-item folder" role="button" tabindex="0"
+             aria-expanded="false"
+             aria-label="${item.name} öffnen">
+          <span class="icon">📁</span>
+          <span>${item.name}</span>
+          <svg class="folder-chevron" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2.5"
+               stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 6 15 12 9 18"/>
+          </svg>
+        </div>`;
+          if (hasChildren) {
+            html += sub;
+          } else {
+            html += `<ul class="tree subtree">
+          <li><div class="tree-item placeholder"><span class="icon">–</span>Noch keine Dateien</div></li>
+        </ul>`;
+          }
+          html += `</li>`;
+        } else {
+          const ext = item.name.split('.').pop().toLowerCase();
+          const icon = ext === 'pdf' ? '📄'
+            : (ext === 'docx' || ext === 'doc') ? '📝'
+              : ext === 'pptx' ? '📊' : '📎';
+          html += `<li>
+        <div class="tree-item file">
+          <span class="icon">${icon}</span>
+          <a href="${item.path}" target="_blank" rel="noopener">${item.name}</a>
+        </div>
+      </li>`;
+        }
+      }
+      html += '</ul>';
+      return html;
     }
-  }
-  html += '</ul>';
-  return html;
-}
 
-// ── Inject & hide empty-note ─────────────────────────────────────
-for (const [grade, items] of Object.entries(material)) {
-  const treeEl = document.getElementById(`tree-${grade}`);
-  if (!treeEl) continue;
-  const html = buildTree(items);
-  treeEl.innerHTML = html
-    .replace(/^<ul class="tree subtree open">/, '')
-    .replace(/<\/ul>$/, '');
-  if (items.length > 0) {
-    const note = document.getElementById(`note-${grade}`);
-    if (note) note.style.display = 'none';
-  }
-}
+    // ── Inject & hide empty-note ─────────────────────────────────────
+    for (const [grade, items] of Object.entries(material)) {
+      const treeEl = document.getElementById(`tree-${grade}`);
+      if (!treeEl) continue;
+      //const html = buildTree(items);
+      const html = buildTree(items, true);
+      treeEl.innerHTML = html
+        .replace(/^<ul class="tree subtree open">/, '')
+        .replace(/<\/ul>$/, '');
+      if (items.length > 0) {
+        const note = document.getElementById(`note-${grade}`);
+        if (note) note.style.display = 'none';
+      }
+    }
 
-// ── Class accordion ──────────────────────────────────────────────
-document.querySelectorAll('.class-toggle').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const expanded = btn.getAttribute('aria-expanded') === 'true';
-    btn.setAttribute('aria-expanded', String(!expanded));
-    document.getElementById(btn.getAttribute('aria-controls'))
-            .classList.toggle('open', !expanded);
-  });
-});
+    // ── Class accordion ──────────────────────────────────────────────
+    document.querySelectorAll('.class-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const expanded = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', String(!expanded));
+        document.getElementById(btn.getAttribute('aria-controls'))
+          .classList.toggle('open', !expanded);
+      });
+    });
 
-// ── Folder toggle ────────────────────────────────────────────────
-function toggleFolder(folder) {
-  const expanded = folder.getAttribute('aria-expanded') === 'true';
-  folder.setAttribute('aria-expanded', String(!expanded));
-  const subtree = folder.parentElement.querySelector('.subtree');
-  if (subtree) subtree.classList.toggle('open', !expanded);
-}
-document.addEventListener('click', e => {
-  const f = e.target.closest('.tree-item.folder');
-  if (f) toggleFolder(f);
-});
-document.addEventListener('keydown', e => {
-  if (e.key !== 'Enter' && e.key !== ' ') return;
-  const f = e.target.closest('.tree-item.folder');
-  if (f) { e.preventDefault(); toggleFolder(f); }
-});
-</script>
+    // ── Folder toggle ────────────────────────────────────────────────
+    function toggleFolder(folder) {
+      const expanded = folder.getAttribute('aria-expanded') === 'true';
+      folder.setAttribute('aria-expanded', String(!expanded));
+      const subtree = folder.parentElement.querySelector('.subtree');
+      if (subtree) subtree.classList.toggle('open', !expanded);
+    }
+    document.addEventListener('click', e => {
+      const f = e.target.closest('.tree-item.folder');
+      if (f) toggleFolder(f);
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      const f = e.target.closest('.tree-item.folder');
+      if (f) { e.preventDefault(); toggleFolder(f); }
+    });
+  </script>
 </body>
+
 </html>
