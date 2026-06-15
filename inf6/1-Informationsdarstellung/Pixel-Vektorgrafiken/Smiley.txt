@@ -1,0 +1,11 @@
+k3:KREIS
+k3.strecken(5)
+k3.füllfarbeSetzen(gelb)
+
+k1:KREIS
+k1.füllfarbeSetzen(weiß)
+k1.verschieben(-20,0)
+
+k2:KREIS
+k2.füllfarbeSetzen(weiß)
+k2.verschieben(20,0)

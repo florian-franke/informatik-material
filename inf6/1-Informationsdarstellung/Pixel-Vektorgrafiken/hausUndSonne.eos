@@ -1,0 +1,11 @@
+// EOS 1.5 - Programm
+r1:RECHTECK
+r1.füllfarbeSetzen(blau)
+
+d1:DREIECK
+d1.verschieben(0,10)
+d1.füllfarbeSetzen(rot)
+
+k1:KREIS
+k1.verschieben(-30,30)
+k1.füllfarbeSetzen(gelb)
