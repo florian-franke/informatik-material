@@ -1,0 +1,9 @@
+Hallo,
+mein Name ist Anna und ich bin Teil der Netzwerk-Ninjas.
+Dies ist Gruppe von Junior-Hackern, die PCs vor Angreifern schützen.
+
+Ich bin gerade auf geheimer Mission unterwegs und alleine im gesamten Gebäude.
+Allerdings habe ich gerade Geräusche gehört - vielleicht bin ich doch nicht alleine.
+
+Öffne die Datei annasMission.txt im Ordner vonAnna und befolge die Anweisungen.
+Schließe nun diese Datei, indem du auf das X rechts oben klickst.
