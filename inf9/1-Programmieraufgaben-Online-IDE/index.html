@@ -1,4 +1,4 @@
-```html
+
 <!DOCTYPE html>
 <html lang="de">
 
@@ -419,6 +419,24 @@ ball.destroy();
 
   <script>
     /**
+     * ==========================================================
+     * HIER DIE URL DER APPS-SCRIPT-WEB-APP EINTRAGEN
+     * ==========================================================
+     *
+     * Die URL muss auf /exec enden, zum Beispiel:
+     * https://script.google.com/macros/s/AKfycb.../exec
+     */
+    const SCRIPT_SERVER_URL =
+      'https://script.google.com/macros/s/DEINE_BEREITSTELLUNGS_ID/exec';
+
+
+    /**
+     * Speichert aktuell laufende Anfragen.
+     */
+    const pendingRequests = new Map();
+
+
+    /**
      * Aktualisiert die Zeichenanzeige eines Textfeldes.
      */
     function updateCharacterCount(taskId) {
@@ -439,8 +457,27 @@ ball.destroy();
 
 
     /**
-     * Sendet eine Antwort an die serverseitige Funktion
-     * evaluateAnswer() in Code.gs.
+     * Erzeugt eine eindeutige Kennung für eine Anfrage.
+     */
+    function createRequestId() {
+      if (
+        window.crypto &&
+        typeof window.crypto.randomUUID === 'function'
+      ) {
+        return window.crypto.randomUUID();
+      }
+
+      return (
+        Date.now().toString(36) +
+        '-' +
+        Math.random().toString(36).substring(2)
+      );
+    }
+
+
+    /**
+     * Sendet eine Antwort über ein unsichtbares Formular
+     * an die externe Apps-Script-Web-App.
      */
     function submitAnswer(taskId) {
       const textarea =
@@ -462,10 +499,6 @@ ball.destroy();
         textarea.value.trim();
 
 
-      /*
-       * Prüfung im Browser.
-       * Die gleiche Prüfung erfolgt zusätzlich serverseitig.
-       */
       if (answer.length < 10) {
         showError(
           resultBox,
@@ -477,9 +510,22 @@ ball.destroy();
       }
 
 
-      /*
-       * Oberfläche während der Anfrage sperren.
-       */
+      if (
+        !SCRIPT_SERVER_URL ||
+        SCRIPT_SERVER_URL.includes(
+          'DEINE_BEREITSTELLUNGS_ID'
+        ) ||
+        !SCRIPT_SERVER_URL.endsWith('/exec')
+      ) {
+        showError(
+          resultBox,
+          'Die Adresse des Auswertungsservers wurde noch nicht richtig eingetragen.'
+        );
+
+        return;
+      }
+
+
       button.disabled = true;
       textarea.disabled = true;
 
@@ -493,76 +539,315 @@ ball.destroy();
         'Deine Antwort wird ausgewertet.';
 
 
-      /*
-       * Aufruf der serverseitigen Apps-Script-Funktion.
-       */
-      google.script.run
+      const requestId =
+        createRequestId();
 
-        .withSuccessHandler(
-          function(result) {
-            button.disabled = false;
-            textarea.disabled = false;
-
-            button.textContent =
-              'Antwort erneut prüfen';
+      const iframeName =
+        'gemini-feedback-' +
+        requestId.replace(
+          /[^a-zA-Z0-9_-]/g,
+          ''
+        );
 
 
-            if (
-              !result ||
-              result.ok !== true
-            ) {
-              showError(
-                resultBox,
+      const iframe =
+        document.createElement('iframe');
 
-                result && result.message
-                  ? result.message
-                  : 'Die Rückmeldung konnte nicht erstellt werden.'
+      iframe.name =
+        iframeName;
+
+      iframe.title =
+        'Unsichtbarer Übertragungsrahmen';
+
+      iframe.setAttribute(
+        'aria-hidden',
+        'true'
+      );
+
+      iframe.style.display =
+        'none';
+
+
+      const form =
+        document.createElement('form');
+
+      form.method =
+        'POST';
+
+      form.action =
+        SCRIPT_SERVER_URL;
+
+      form.target =
+        iframeName;
+
+      form.acceptCharset =
+        'UTF-8';
+
+      form.style.display =
+        'none';
+
+
+      appendHiddenField(
+        form,
+        'requestId',
+        requestId
+      );
+
+      appendHiddenField(
+        form,
+        'taskId',
+        taskId
+      );
+
+      appendHiddenField(
+        form,
+        'answer',
+        answer
+      );
+
+      appendHiddenField(
+        form,
+        'parentOrigin',
+        location.origin &&
+        location.origin !== 'null'
+          ? location.origin
+          : ''
+      );
+
+
+      document.body.appendChild(
+        iframe
+      );
+
+      document.body.appendChild(
+        form
+      );
+
+
+      const timeoutId =
+        window.setTimeout(
+          function() {
+            const pending =
+              pendingRequests.get(
+                requestId
               );
 
+            if (!pending) {
               return;
             }
 
-
-            showEvaluation(
-              resultBox,
-              result
+            restoreTaskControls(
+              pending
             );
-          }
-        )
-
-        .withFailureHandler(
-          function(error) {
-            button.disabled = false;
-            textarea.disabled = false;
-
-            button.textContent =
-              'Antwort erneut prüfen';
-
 
             showError(
-              resultBox,
-
-              'Es ist ein technischer Fehler aufgetreten. ' +
-              'Bitte versuche es erneut.'
+              pending.resultBox,
+              'Der Auswertungsserver hat nicht rechtzeitig geantwortet. Bitte versuche es erneut.'
             );
 
+            cleanupRequest(
+              requestId
+            );
+          },
+          60000
+        );
 
-            console.error(error);
-          }
-        )
 
-        .evaluateAnswer({
-          taskId: taskId,
-          answer: answer
-        });
+      pendingRequests.set(
+        requestId,
+        {
+          iframe: iframe,
+          form: form,
+          textarea: textarea,
+          button: button,
+          resultBox: resultBox,
+          timeoutId: timeoutId
+        }
+      );
+
+
+      form.submit();
+    }
+
+
+    /**
+     * Fügt dem versteckten Formular ein Feld hinzu.
+     */
+    function appendHiddenField(
+      form,
+      name,
+      value
+    ) {
+      const input =
+        document.createElement('input');
+
+      input.type =
+        'hidden';
+
+      input.name =
+        name;
+
+      input.value =
+        String(value);
+
+      form.appendChild(
+        input
+      );
+    }
+
+
+    /**
+     * Empfängt die Rückmeldung aus dem
+     * unsichtbaren iframe.
+     */
+    window.addEventListener(
+      'message',
+
+      function(event) {
+        const message =
+          event.data;
+
+
+        if (
+          !message ||
+          message.type !==
+            'GEMINI_EVALUATION_RESULT' ||
+          !message.requestId
+        ) {
+          return;
+        }
+
+
+        const pending =
+          pendingRequests.get(
+            message.requestId
+          );
+
+
+        if (!pending) {
+          return;
+        }
+
+
+        if (
+          event.source !==
+          pending.iframe.contentWindow
+        ) {
+          return;
+        }
+
+
+        window.clearTimeout(
+          pending.timeoutId
+        );
+
+        restoreTaskControls(
+          pending
+        );
+
+
+        const result =
+          message.result;
+
+
+        if (
+          !result ||
+          result.ok !== true
+        ) {
+          showError(
+            pending.resultBox,
+
+            result && result.message
+              ? result.message
+              : 'Die Rückmeldung konnte nicht erstellt werden.'
+          );
+
+          cleanupRequest(
+            message.requestId
+          );
+
+          return;
+        }
+
+
+        showEvaluation(
+          pending.resultBox,
+          result
+        );
+
+        cleanupRequest(
+          message.requestId
+        );
+      }
+    );
+
+
+    /**
+     * Aktiviert Textfeld und Schaltfläche wieder.
+     */
+    function restoreTaskControls(
+      pending
+    ) {
+      pending.button.disabled =
+        false;
+
+      pending.textarea.disabled =
+        false;
+
+      pending.button.textContent =
+        'Antwort erneut prüfen';
+    }
+
+
+    /**
+     * Entfernt Hilfselemente und gespeicherte Anfrage.
+     */
+    function cleanupRequest(
+      requestId
+    ) {
+      const pending =
+        pendingRequests.get(
+          requestId
+        );
+
+      if (!pending) {
+        return;
+      }
+
+
+      window.clearTimeout(
+        pending.timeoutId
+      );
+
+
+      if (
+        pending.form &&
+        pending.form.parentNode
+      ) {
+        pending.form.parentNode.removeChild(
+          pending.form
+        );
+      }
+
+
+      if (
+        pending.iframe &&
+        pending.iframe.parentNode
+      ) {
+        pending.iframe.parentNode.removeChild(
+          pending.iframe
+        );
+      }
+
+
+      pendingRequests.delete(
+        requestId
+      );
     }
 
 
     /**
      * Zeigt eine erfolgreiche KI-Auswertung an.
-     *
-     * Zur Sicherheit wird textContent verwendet.
-     * Die KI-Antwort wird nicht direkt als HTML eingesetzt.
      */
     function showEvaluation(
       resultBox,
@@ -574,9 +859,6 @@ ball.destroy();
         'result success';
 
 
-      /*
-       * Überschrift mit Punktzahl und Status.
-       */
       const heading =
         document.createElement('h3');
 
@@ -587,40 +869,27 @@ ball.destroy();
         ' Punkten – ' +
         result.status;
 
-      resultBox.appendChild(heading);
+      resultBox.appendChild(
+        heading
+      );
 
 
-      /*
-       * Richtige Aspekte.
-       */
       appendList(
         resultBox,
-
         'Das ist dir gelungen:',
-
         result.strengths,
-
         'Es wurde noch kein eindeutiger richtiger Aspekt erkannt.'
       );
 
 
-      /*
-       * Fehlende oder ungenaue Aspekte.
-       */
       appendList(
         resultBox,
-
         'Das solltest du ergänzen oder überprüfen:',
-
         result.missing,
-
         'Es fehlen keine wesentlichen Aspekte.'
       );
 
 
-      /*
-       * Zusammenfassendes Feedback.
-       */
       const feedbackContainer =
         document.createElement('div');
 
@@ -672,7 +941,9 @@ ball.destroy();
       heading.textContent =
         headingText;
 
-      container.appendChild(heading);
+      container.appendChild(
+        heading
+      );
 
 
       if (
@@ -712,7 +983,9 @@ ball.destroy();
       );
 
 
-      container.appendChild(list);
+      container.appendChild(
+        list
+      );
     }
 
 
@@ -735,4 +1008,3 @@ ball.destroy();
 </body>
 
 </html>
-```
