@@ -59,6 +59,105 @@
       padding: 0 1.25rem 4rem;
     }
 
+    [hidden] {
+      display: none !important;
+    }
+
+    .subject-selection {
+      min-height: 42vh;
+      display: grid;
+      align-content: center;
+    }
+
+    .subject-selection h2 {
+      margin-bottom: .35rem;
+      text-align: center;
+      font-size: 1.45rem;
+    }
+
+    .subject-selection > p {
+      margin-bottom: 1.5rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .subject-buttons {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .subject-button {
+      min-height: 150px;
+      padding: 1.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: .45rem;
+      font: inherit;
+      transition: border-color .15s, box-shadow .15s, transform .15s;
+    }
+
+    .subject-button:hover {
+      border-color: var(--accent);
+      box-shadow: 0 6px 18px rgba(59, 110, 165, .12);
+      transform: translateY(-2px);
+    }
+
+    .subject-button:focus-visible,
+    .back-button:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    .subject-icon {
+      font-size: 2.2rem;
+      line-height: 1;
+    }
+
+    .subject-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .subject-description {
+      color: var(--muted);
+      font-size: .86rem;
+    }
+
+    .subject-heading {
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .subject-heading h2 {
+      font-size: 1.35rem;
+    }
+
+    .back-button {
+      padding: .5rem .8rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--accent);
+      cursor: pointer;
+      font: inherit;
+      font-size: .88rem;
+      font-weight: 600;
+    }
+
+    .back-button:hover {
+      background: var(--hover-bg);
+    }
+
     /* ── Class accordion ── */
     .class-block {
       background: var(--surface);
@@ -232,6 +331,20 @@
       main {
         padding: 0 .75rem 3rem;
       }
+
+      .subject-buttons {
+        grid-template-columns: 1fr;
+      }
+
+      .subject-button {
+        min-height: 120px;
+      }
+
+      .subject-heading {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: .65rem;
+      }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -261,6 +374,29 @@
 
   <main>
 
+    <section class="subject-selection" id="subject-selection" aria-labelledby="subject-selection-title">
+      <h2 id="subject-selection-title">Fach auswählen</h2>
+      <p>Für welches Fach möchtest du Materialien ansehen?</p>
+      <div class="subject-buttons">
+        <button class="subject-button" type="button" data-subject="informatik">
+          <span class="subject-icon" aria-hidden="true">&#128187;</span>
+          <span class="subject-name">Informatik</span>
+          <span class="subject-description">Materialien für Natur und Technik und Informatik</span>
+        </button>
+        <button class="subject-button" type="button" data-subject="physik">
+          <span class="subject-icon" aria-hidden="true">&#9883;</span>
+          <span class="subject-name">Physik</span>
+          <span class="subject-description">Materialien für die Klassen 7 bis 11</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="subject-view" id="subject-informatik" aria-labelledby="informatik-title" hidden>
+      <div class="subject-heading">
+        <button class="back-button" type="button">&larr; Fächerauswahl</button>
+        <h2 id="informatik-title" tabindex="-1">Informatik</h2>
+      </div>
+
     <!-- Klasse 6 -->
     <div class="class-block">
       <button class="class-toggle" aria-expanded="false" aria-controls="panel-6">
@@ -281,7 +417,7 @@
     <div class="class-block">
       <button class="class-toggle" aria-expanded="false" aria-controls="panel-7">
         <span class="class-badge">Kl. 7</span>
-        <span class="class-label">Klasse 7 – Natur und Technik</span>
+        <span class="class-label">Klasse 7 – Natur und Technik - aktuell leer </span>
         <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
           stroke-linecap="round" stroke-linejoin="round">
           <polyline points="6 9 12 15 18 9" />
@@ -357,6 +493,86 @@
       </div>
     </div>
 
+    </section>
+
+    <section class="subject-view" id="subject-physik" aria-labelledby="physik-title" hidden>
+      <div class="subject-heading">
+        <button class="back-button" type="button">&larr; Fächerauswahl</button>
+        <h2 id="physik-title" tabindex="-1">Physik</h2>
+      </div>
+
+      <!-- Physik Klassen 7 bis 11 -->
+      <div class="class-block">
+        <button class="class-toggle" aria-expanded="false" aria-controls="physics-panel-7">
+          <span class="class-badge">Kl. 7</span>
+          <span class="class-label">Klasse 7 – Physik</span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </button>
+        <div class="class-panel" id="physics-panel-7">
+          <p class="empty-note">Noch keine Materialien vorhanden.</p>
+        </div>
+      </div>
+
+      <div class="class-block">
+        <button class="class-toggle" aria-expanded="false" aria-controls="physics-panel-8">
+          <span class="class-badge">Kl. 8</span>
+          <span class="class-label">Klasse 8 – Physik</span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </button>
+        <div class="class-panel" id="physics-panel-8">
+          <p class="empty-note">Noch keine Materialien vorhanden.</p>
+        </div>
+      </div>
+
+      <div class="class-block">
+        <button class="class-toggle" aria-expanded="false" aria-controls="physics-panel-9">
+          <span class="class-badge">Kl. 9</span>
+          <span class="class-label">Klasse 9 – Physik</span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </button>
+        <div class="class-panel" id="physics-panel-9">
+          <p class="empty-note">Noch keine Materialien vorhanden.</p>
+        </div>
+      </div>
+
+      <div class="class-block">
+        <button class="class-toggle" aria-expanded="false" aria-controls="physics-panel-10">
+          <span class="class-badge">Kl. 10</span>
+          <span class="class-label">Klasse 10 – Physik</span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </button>
+        <div class="class-panel" id="physics-panel-10">
+          <p class="empty-note">Noch keine Materialien vorhanden.</p>
+        </div>
+      </div>
+
+      <div class="class-block">
+        <button class="class-toggle" aria-expanded="false" aria-controls="physics-panel-11">
+          <span class="class-badge">Kl. 11</span>
+          <span class="class-label">Klasse 11 – Physik</span>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </button>
+        <div class="class-panel" id="physics-panel-11">
+          <p class="empty-note">Noch keine Materialien vorhanden.</p>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <footer>Unterrichtsmaterial · Alle Rechte vorbehalten</footer>
@@ -370,6 +586,35 @@
   <script src="material/klasse-12.js"></script>
 
   <script>
+    const subjectSelection = document.getElementById('subject-selection');
+    const subjectViews = document.querySelectorAll('.subject-view');
+
+    function showSubject(subject) {
+      subjectSelection.hidden = true;
+      subjectViews.forEach(view => {
+        view.hidden = view.id !== `subject-${subject}`;
+      });
+      document.getElementById(`subject-${subject}`).querySelector('h2').focus({ preventScroll: true });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showSubjectSelection() {
+      subjectViews.forEach(view => {
+        view.hidden = true;
+      });
+      subjectSelection.hidden = false;
+      subjectSelection.querySelector('.subject-button').focus({ preventScroll: true });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.querySelectorAll('.subject-button').forEach(button => {
+      button.addEventListener('click', () => showSubject(button.dataset.subject));
+    });
+
+    document.querySelectorAll('.back-button').forEach(button => {
+      button.addEventListener('click', showSubjectSelection);
+    });
+
     // ═══════════════════════════════════════════════════════════════════
     //  MATERIALSTRUKTUR
     //  So funktioniert das Schema:

@@ -1,0 +1,15 @@
+#BlueJ class context
+comment0.target=Aufzugknopf
+comment0.text=\r\n\ Spezieller\ Schalter\ zum\ Rufen\ eins\ Aufzugs.\r\n\ \r\n\ @author\ Thomas\ Schaller\r\n\ @version\ 28.06.2017\ V1.0\r\n
+comment1.params=w
+comment1.target=Aufzugknopf(greenfoot.World)
+comment1.text=\r\n\ Konstruktor\ Aufzugknopf\r\n
+comment2.params=aufzug\ stockwerk
+comment2.target=void\ setAufzug(Gegenstand,\ int)
+comment2.text=\r\n\ Setzt\ den\ dazugeh\u00F6rigen\ Aufzug\r\n\ \r\n\ @param\ \ aufzug\ \ \ Ein\ Gegenstand\ vom\ Typ\ Aufzug\r\n
+comment3.params=
+comment3.target=void\ rufeAufzug()
+comment4.params=
+comment4.target=void\ umschalten()
+comment4.text=\ Schaltet\ den\ Schalter\ um,\ d.h.\ von\ on\ auf\ off\ oder\ umgekehrt\r\n
+numComments=5

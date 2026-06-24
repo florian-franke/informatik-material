@@ -1,0 +1,26 @@
+#BlueJ class context
+comment0.target=AB5
+comment1.params=
+comment1.target=boolean\ istFassVorne()
+comment1.text=\#\r\n\ Aufgabe\ 1,\ 2,\ 3\ und\ 10\:\ Upgrade\ 1\ -\ ein\ neuer\ Sensor\ wird\ erstellt\r\n
+comment2.params=
+comment2.target=boolean\ istFassHinten()
+comment2.text=\#\r\n\ Aufgabe\ 4\:\ Rueckspiegel\r\n
+comment3.params=
+comment3.target=boolean\ istEnergieSchwach()
+comment3.text=\#\r\n\ Aufgabe\ 5\:\ Out\ of\ Power\r\n
+comment4.params=
+comment4.target=boolean\ istSchwerBeladen()
+comment4.text=\#\r\n\ Aufgabe\ 6\:\ Heavy\ Duty\r\n
+comment5.params=
+comment5.target=boolean\ istVorFassFrei()
+comment5.text=\#\r\n\ Aufgabe\ 7\ und\ 11\:\ Look\ Ahead\ -\ Upgrade\ 2\r\n
+comment6.params=
+comment6.target=boolean\ istKreuzung()
+comment6.text=\#\r\n\ Aufgabe\ 9\:\ Fuehrerschein\r\n
+comment7.params=
+comment7.target=void\ geheBisKreuzung()
+comment8.params=
+comment8.target=void\ einsatz5()
+comment8.text=\#\r\n\ Einsatz\ 5\:\ Bitte\ den\ Namen\ nicht\ aendern\!\r\n
+numComments=9
