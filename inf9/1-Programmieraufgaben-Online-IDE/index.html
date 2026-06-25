@@ -729,12 +729,57 @@ ball.destroy();
         }
 
 
-        if (
-          event.source !==
-          pending.iframe.contentWindow
-        ) {
-          return;
-        }
+/*
+ * Apps Script führt HtmlService-Ausgaben in einem
+ * Google-Sandbox-iframe aus. Deshalb kann event.source
+ * nicht mit dem äußeren iframe verglichen werden.
+ *
+ * Stattdessen wird die Herkunft der Nachricht geprüft.
+ */
+if (
+  !isTrustedAppsScriptOrigin(
+    event.origin
+  )
+) {
+  console.warn(
+    'Nachricht von unbekannter Herkunft verworfen:',
+    event.origin
+  );
+
+  return;
+}
+
+
+/**
+ * Akzeptiert ausschließlich Ursprünge der
+ * Google-Apps-Script-Ausgabe.
+ */
+function isTrustedAppsScriptOrigin(origin) {
+  try {
+    const url =
+      new URL(origin);
+
+    if (url.protocol !== 'https:') {
+      return false;
+    }
+
+    return (
+      url.hostname ===
+        'script.google.com' ||
+
+      url.hostname ===
+        'script.googleusercontent.com' ||
+
+      url.hostname.endsWith(
+        '.script.googleusercontent.com'
+      )
+    );
+
+  } catch (error) {
+    return false;
+  }
+}
+
 
 
         window.clearTimeout(
