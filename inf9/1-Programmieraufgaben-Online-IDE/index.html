@@ -431,6 +431,35 @@ ball.destroy();
 
 
     /**
+     * Gibt die eingetragene Apps-Script-Adresse bereinigt zurueck.
+     */
+    function getScriptServerUrl() {
+      return SCRIPT_SERVER_URL.trim();
+    }
+
+
+    /**
+     * Prueft, ob die Apps-Script-Adresse grundsaetzlich verwendbar ist.
+     */
+    function isValidScriptServerUrl(url) {
+      try {
+        const parsedUrl =
+          new URL(url);
+
+        return (
+          parsedUrl.protocol === 'https:' &&
+          parsedUrl.hostname === 'script.google.com' &&
+          parsedUrl.pathname.endsWith('/exec') &&
+          !url.includes('DEINE_BEREITSTELLUNGS_ID') &&
+          !url.includes('DEINE_SCRIPT_ID')
+        );
+      } catch (error) {
+        return false;
+      }
+    }
+
+
+    /**
      * Speichert aktuell laufende Anfragen.
      */
     const pendingRequests = new Map();
@@ -498,6 +527,9 @@ ball.destroy();
       const answer =
         textarea.value.trim();
 
+      const scriptServerUrl =
+        getScriptServerUrl();
+
 
       if (answer.length < 10) {
         showError(
@@ -511,11 +543,7 @@ ball.destroy();
 
 
       if (
-        !SCRIPT_SERVER_URL ||
-        SCRIPT_SERVER_URL.includes(
-          'AKfycby8RWL6uYrKZyoJ6m2GRpWyRmXjwsdskyCiqzKpRhIK5-wrDl-9lWWk8CiAGaVMoy0x'
-        ) ||
-        !SCRIPT_SERVER_URL.endsWith('/exec')
+        !isValidScriptServerUrl(scriptServerUrl)
       ) {
         showError(
           resultBox,
@@ -575,7 +603,7 @@ ball.destroy();
         'POST';
 
       form.action =
-        SCRIPT_SERVER_URL;
+        scriptServerUrl;
 
       form.target =
         iframeName;
