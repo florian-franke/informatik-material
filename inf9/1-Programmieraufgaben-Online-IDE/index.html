@@ -601,6 +601,101 @@ ball.destroy();
       const requestId =
         createRequestId();
 
+      {
+      const script =
+        document.createElement('script');
+
+      script.async =
+        true;
+
+      script.src =
+        createJsonpUrl(
+          scriptServerUrl,
+          {
+            callback:
+              '__handleGeminiEvaluationResult',
+            requestId:
+              requestId,
+            taskId:
+              taskId,
+            answer:
+              answer
+          }
+        );
+
+      script.onerror =
+        function() {
+          const pending =
+            pendingRequests.get(
+              requestId
+            );
+
+          if (!pending) {
+            return;
+          }
+
+          restoreTaskControls(
+            pending
+          );
+
+          showError(
+            pending.resultBox,
+            'Der Auswertungsserver konnte nicht geladen werden.'
+          );
+
+          cleanupRequest(
+            requestId
+          );
+        };
+
+      const timeoutId =
+        window.setTimeout(
+          function() {
+            const pending =
+              pendingRequests.get(
+                requestId
+              );
+
+            if (!pending) {
+              return;
+            }
+
+            restoreTaskControls(
+              pending
+            );
+
+            showError(
+              pending.resultBox,
+              'Der Auswertungsserver hat nicht rechtzeitig geantwortet. Bitte versuche es erneut.'
+            );
+
+            cleanupRequest(
+              requestId
+            );
+          },
+          60000
+        );
+
+
+      pendingRequests.set(
+        requestId,
+        {
+          script: script,
+          textarea: textarea,
+          button: button,
+          resultBox: resultBox,
+          timeoutId: timeoutId
+        }
+      );
+
+
+      document.body.appendChild(
+        script
+      );
+
+      return;
+      }
+
       const iframeName =
         'gemini-feedback-' +
         requestId.replace(
@@ -756,6 +851,109 @@ ball.destroy();
      * Empfängt die Rückmeldung aus dem
      * unsichtbaren iframe.
      */
+    /**
+     * Erstellt die JSONP-Adresse fuer Apps Script.
+     * Dieser Weg vermeidet iframes, die Google per X-Frame-Options blockiert.
+     */
+    function createJsonpUrl(
+      baseUrl,
+      parameters
+    ) {
+      const url =
+        new URL(baseUrl);
+
+      Object.keys(parameters).forEach(
+        function(key) {
+          url.searchParams.set(
+            key,
+            parameters[key]
+          );
+        }
+      );
+
+      return url.toString();
+    }
+
+
+    /**
+     * Wird von Apps Script per JSONP aufgerufen.
+     */
+    window.__handleGeminiEvaluationResult =
+      function(message) {
+        handleEvaluationMessage(
+          normalizeServerMessage(message)
+        );
+      };
+
+
+    /**
+     * Verarbeitet eine Rueckmeldung des Auswertungsservers.
+     */
+    function handleEvaluationMessage(message) {
+      if (
+        !message ||
+        message.type !==
+          'GEMINI_EVALUATION_RESULT' ||
+        !message.requestId
+      ) {
+        return;
+      }
+
+      const pending =
+        pendingRequests.get(
+          message.requestId
+        );
+
+      if (!pending) {
+        console.warn(
+          'Auswertungsnachricht ohne passende offene Anfrage empfangen:',
+          message.requestId
+        );
+
+        return;
+      }
+
+      window.clearTimeout(
+        pending.timeoutId
+      );
+
+      restoreTaskControls(
+        pending
+      );
+
+      const result =
+        message.result;
+
+      if (
+        !result ||
+        result.ok !== true
+      ) {
+        showError(
+          pending.resultBox,
+
+          result && result.message
+            ? result.message
+            : 'Die Rueckmeldung konnte nicht erstellt werden.'
+        );
+
+        cleanupRequest(
+          message.requestId
+        );
+
+        return;
+      }
+
+      showEvaluation(
+        pending.resultBox,
+        result
+      );
+
+      cleanupRequest(
+        message.requestId
+      );
+    }
+
+
     window.addEventListener(
       'message',
 
@@ -978,6 +1176,16 @@ function isTrustedAppsScriptOrigin(origin) {
       window.clearTimeout(
         pending.timeoutId
       );
+
+
+      if (
+        pending.script &&
+        pending.script.parentNode
+      ) {
+        pending.script.parentNode.removeChild(
+          pending.script
+        );
+      }
 
 
       if (

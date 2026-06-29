@@ -116,7 +116,20 @@ const EVALUATION_SCHEMA = {
  * Kleiner Gesundheitscheck, damit ein direkter Aufruf der Web-App
  * nicht mit einer fehlenden Index-Datei endet.
  */
-function doGet() {
+function doGet(event) {
+  const callback =
+    event &&
+    event.parameter
+      ? String(event.parameter.callback || '')
+      : '';
+
+  if (callback) {
+    return handleJsonpRequest_(
+      event,
+      callback
+    );
+  }
+
   return HtmlService
     .createHtmlOutput(
       '<!doctype html>' +
@@ -125,6 +138,83 @@ function doGet() {
       '<h1>Auswertungsserver ist erreichbar</h1>' +
       '<p>POST-Anfragen der Unterrichtsseite koennen verarbeitet werden.</p>'
     );
+}
+
+
+function handleJsonpRequest_(
+  event,
+  callback
+) {
+  try {
+    validateCallbackName_(
+      callback
+    );
+  } catch (error) {
+    return ContentService
+      .createTextOutput(
+        '/* Ungueltiger JSONP-Callback. */'
+      )
+      .setMimeType(
+        ContentService.MimeType.JAVASCRIPT
+      );
+  }
+
+  const request =
+    readRequest_(event);
+
+  let result;
+
+  try {
+    validateRequest_(
+      request
+    );
+
+    const task =
+      TASKS[request.taskId];
+
+    result =
+      evaluateWithGemini_(
+        task,
+        request.answer
+      );
+
+  } catch (error) {
+    result =
+      createErrorResult_(
+        error && error.message
+          ? error.message
+          : 'Die Antwort konnte nicht ausgewertet werden.'
+      );
+  }
+
+  const payload = {
+    type:
+      RESULT_MESSAGE_TYPE,
+    requestId:
+      request.requestId || '',
+    result:
+      result
+  };
+
+  return ContentService
+    .createTextOutput(
+      callback +
+      '(' +
+      toScriptJson_(payload) +
+      ');'
+    )
+    .setMimeType(
+      ContentService.MimeType.JAVASCRIPT
+    );
+}
+
+
+function validateCallbackName_(callback) {
+  if (!/^[A-Za-z_$][0-9A-Za-z_$]*(\.[A-Za-z_$][0-9A-Za-z_$]*)*$/.test(callback)) {
+    throw new Error(
+      'Ungueltiger JSONP-Callback.'
+    );
+  }
 }
 
 
