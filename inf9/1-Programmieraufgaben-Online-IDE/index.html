@@ -781,6 +781,11 @@ ball.destroy();
 
 
         if (!pending) {
+          console.warn(
+            'Auswertungsnachricht ohne passende offene Anfrage empfangen:',
+            message.requestId
+          );
+
           return;
         }
 

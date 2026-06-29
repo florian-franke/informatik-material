@@ -508,11 +508,6 @@ function createPostMessageResponse_(
   result,
   parentOrigin
 ) {
-  const targetOrigin =
-    getSafeTargetOrigin_(
-      parentOrigin
-    );
-
   const payload = {
     type:
       RESULT_MESSAGE_TYPE,
@@ -529,8 +524,11 @@ function createPostMessageResponse_(
     '<script>' +
     '(function(){' +
     'var payload=' + toScriptJson_(payload) + ';' +
-    'var targetOrigin=' + toScriptJson_(targetOrigin) + ';' +
-    'window.top.postMessage(payload,targetOrigin);' +
+    'var targets=[window.parent,window.top];' +
+    'try{if(window.parent&&window.parent.parent){targets.push(window.parent.parent);}}catch(error){}' +
+    'for(var i=0;i<targets.length;i++){' +
+    'try{targets[i].postMessage(payload,"*");}catch(error){}' +
+    '}' +
     '}());' +
     '</script>' +
     '<p>Die Auswertung wurde an die Unterrichtsseite uebermittelt.</p>';
@@ -538,32 +536,6 @@ function createPostMessageResponse_(
   return HtmlService
     .createHtmlOutput(html)
     .setTitle('Auswertung');
-}
-
-
-function getSafeTargetOrigin_(parentOrigin) {
-  if (
-    !parentOrigin ||
-    parentOrigin === 'null'
-  ) {
-    return '*';
-  }
-
-  try {
-    const url =
-      new URL(parentOrigin);
-
-    if (
-      url.protocol === 'http:' ||
-      url.protocol === 'https:'
-    ) {
-      return parentOrigin;
-    }
-  } catch (error) {
-    return '*';
-  }
-
-  return '*';
 }
 
 
