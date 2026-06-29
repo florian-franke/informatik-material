@@ -384,6 +384,12 @@ function evaluateWithGemini_(
     statusCode < 200 ||
     statusCode >= 300
   ) {
+    if (statusCode === 429) {
+      throw new Error(
+        'Das Gemini-Kontingent ist gerade ausgelastet oder aufgebraucht. Bitte warte kurz und versuche es dann erneut.'
+      );
+    }
+
     throw new Error(
       'Gemini hat die Anfrage abgelehnt. HTTP-Status: ' +
       statusCode
@@ -401,9 +407,225 @@ function evaluateWithGemini_(
       ? JSON.parse(text)
       : geminiResponse;
 
-  return normalizeEvaluation_(
-    evaluation,
-    task.maxPoints
+  return applyRuleBasedMinimum_(
+    normalizeEvaluation_(
+      evaluation,
+      task.maxPoints
+    ),
+    task,
+    answer
+  );
+}
+
+
+function applyRuleBasedMinimum_(
+  evaluation,
+  task,
+  answer
+) {
+  if (task !== TASKS.b) {
+    return evaluation;
+  }
+
+  const ruleBasedEvaluation =
+    evaluateTaskBByRules_(
+      answer,
+      task.maxPoints
+    );
+
+  if (
+    ruleBasedEvaluation.points >
+    evaluation.points
+  ) {
+    return ruleBasedEvaluation;
+  }
+
+  return evaluation;
+}
+
+
+function evaluateTaskBByRules_(
+  answer,
+  maxPoints
+) {
+  const normalizedAnswer =
+    normalizeGermanText_(
+      answer
+    );
+
+  const strengths = [];
+  const missing = [];
+  let points = 0;
+
+  if (containsAny_(normalizedAnswer, [
+    'erstellt',
+    'erzeugt',
+    'angelegt',
+    'new circle',
+    'neuer kreis',
+    'kreis wird erstellt',
+    'ball wird erstellt'
+  ])) {
+    points += 1;
+    strengths.push(
+      'Du erkennst, dass zuerst ein Kreis beziehungsweise Ball erstellt wird.'
+    );
+  } else {
+    missing.push(
+      'Erklaere, dass in der ersten Zeile ein Kreis-Objekt erzeugt wird.'
+    );
+  }
+
+  if (containsAny_(normalizedAnswer, [
+    'bewegt',
+    'verschoben',
+    'move',
+    'wandert'
+  ])) {
+    points += 1;
+    strengths.push(
+      'Du beschreibst, dass der Kreis bewegt oder verschoben wird.'
+    );
+  } else {
+    missing.push(
+      'Ergaenze, dass move(10, 10) den Kreis verschiebt.'
+    );
+  }
+
+  if (containsAny_(normalizedAnswer, [
+    'rot',
+    'red',
+    'color.red'
+  ])) {
+    points += 1;
+    strengths.push(
+      'Du nennst die rote Faerbung durch setFillColor(Color.red).'
+    );
+  } else if (containsAny_(normalizedAnswer, [
+    'blau',
+    'blue',
+    'gefaerbt',
+    'farbig',
+    'farbe'
+  ])) {
+    missing.push(
+      'Die Farbe ist im Programm rot, nicht blau.'
+    );
+  } else {
+    missing.push(
+      'Ergaenze, dass setFillColor(Color.red) den Kreis rot faerbt.'
+    );
+  }
+
+  if (containsAny_(normalizedAnswer, [
+    'zerstoert',
+    'zerstort',
+    'entfernt',
+    'geloescht',
+    'geloscht',
+    'verschwindet',
+    'destroy'
+  ])) {
+    points += 1;
+    strengths.push(
+      'Du erkennst, dass der Kreis am Ende entfernt oder zerstoert wird.'
+    );
+  } else {
+    missing.push(
+      'Erklaere, dass destroy() den Kreis wieder entfernt.'
+    );
+  }
+
+  if (containsAny_(normalizedAnswer, [
+    'dann',
+    'anschliessend',
+    'anschließend',
+    'danach',
+    'zuerst'
+  ])) {
+    points += 1;
+    strengths.push(
+      'Du beschreibst die Reihenfolge des Programms nachvollziehbar.'
+    );
+  }
+
+  if (containsAny_(normalizedAnswer, [
+    'position',
+    'groesse',
+    'grosse',
+    'größe',
+    'koordinate',
+    'x',
+    'y',
+    '200',
+    '50'
+  ])) {
+    points += 1;
+    strengths.push(
+      'Du gehst auf die Zahlen fuer Position oder Groesse ein.'
+    );
+  } else {
+    missing.push(
+      'Fuer die volle Punktzahl solltest du noch die Bedeutung der Zahlen erwaehnen.'
+    );
+  }
+
+  points =
+    clampNumber_(
+      points,
+      0,
+      maxPoints
+    );
+
+  return {
+    ok:
+      true,
+    points:
+      points,
+    maxPoints:
+      maxPoints,
+    status:
+      points >= maxPoints * 0.75
+        ? 'gut'
+        : points >= maxPoints * 0.4
+          ? 'teilweise richtig'
+          : 'noch unvollstaendig',
+    strengths:
+      strengths.slice(0, 4),
+    missing:
+      missing.slice(0, 4),
+    feedback:
+      points >= maxPoints * 0.75
+        ? 'Deine Antwort trifft die wichtigsten Programmschritte. Achte noch auf genaue Fachbegriffe und die richtige Farbe.'
+        : 'Du hast einige wichtige Programmschritte erkannt. Ergaenze noch die fehlenden Details, besonders Farbe und Zahlen.'
+  };
+}
+
+
+function normalizeGermanText_(text) {
+  return String(text || '')
+    .toLowerCase()
+    .replace(/ä/g, 'ae')
+    .replace(/ö/g, 'oe')
+    .replace(/ü/g, 'ue')
+    .replace(/ß/g, 'ss')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+
+function containsAny_(
+  text,
+  needles
+) {
+  return needles.some(
+    function(needle) {
+      return text.includes(
+        normalizeGermanText_(
+          needle
+        )
+      );
+    }
   );
 }
 
@@ -460,6 +682,39 @@ function extractGeminiText_(geminiResponse) {
     geminiResponse.output_text
   ) {
     return String(geminiResponse.output_text).trim();
+  }
+
+  if (
+    geminiResponse &&
+    Array.isArray(geminiResponse.output)
+  ) {
+    const outputText =
+      geminiResponse.output
+        .map(function(item) {
+          if (item.text) {
+            return item.text;
+          }
+
+          if (Array.isArray(item.content)) {
+            return item.content
+              .map(function(contentItem) {
+                return (
+                  contentItem.text ||
+                  contentItem.output_text ||
+                  ''
+                );
+              })
+              .join('');
+          }
+
+          return '';
+        })
+        .join('')
+        .trim();
+
+    if (outputText) {
+      return outputText;
+    }
   }
 
   if (
