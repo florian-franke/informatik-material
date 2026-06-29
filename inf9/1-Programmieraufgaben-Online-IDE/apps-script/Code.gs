@@ -524,10 +524,12 @@ function createPostMessageResponse_(
     '<script>' +
     '(function(){' +
     'var payload=' + toScriptJson_(payload) + ';' +
+    'var payloadText=' + toScriptJson_(JSON.stringify(payload)) + ';' +
     'var targets=[window.parent,window.top];' +
     'try{if(window.parent&&window.parent.parent){targets.push(window.parent.parent);}}catch(error){}' +
     'for(var i=0;i<targets.length;i++){' +
     'try{targets[i].postMessage(payload,"*");}catch(error){}' +
+    'try{targets[i].postMessage(payloadText,"*");}catch(error){}' +
     '}' +
     '}());' +
     '</script>' +
