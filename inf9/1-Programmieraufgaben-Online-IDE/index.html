@@ -331,7 +331,7 @@ ball.destroy();
       <h2>Aufgabe b)</h2>
 
       <p>
-        Beschreibe, welche Funktion jede einzelne Programmzeile hat. Test Test
+        Beschreibe, welche Funktion jede einzelne Programmzeile hat. Test
       </p>
 
       <textarea
@@ -833,6 +833,10 @@ function isTrustedAppsScriptOrigin(origin) {
 
       url.hostname.endsWith(
         '.script.googleusercontent.com'
+      ) ||
+
+      url.hostname.endsWith(
+        '-script.googleusercontent.com'
       )
     );
 
