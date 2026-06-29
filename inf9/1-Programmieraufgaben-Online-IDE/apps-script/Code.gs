@@ -423,15 +423,27 @@ function applyRuleBasedMinimum_(
   task,
   answer
 ) {
-  if (task !== TASKS.b) {
-    return evaluation;
+  let ruleBasedEvaluation = null;
+
+  if (task === TASKS.b) {
+    ruleBasedEvaluation =
+      evaluateTaskBByRules_(
+        answer,
+        task.maxPoints
+      );
   }
 
-  const ruleBasedEvaluation =
-    evaluateTaskBByRules_(
-      answer,
-      task.maxPoints
-    );
+  if (task === TASKS.c) {
+    ruleBasedEvaluation =
+      evaluateTaskCByRules_(
+        answer,
+        task.maxPoints
+      );
+  }
+
+  if (!ruleBasedEvaluation) {
+    return evaluation;
+  }
 
   if (
     ruleBasedEvaluation.points >
@@ -598,6 +610,152 @@ function evaluateTaskBByRules_(
       points >= maxPoints * 0.75
         ? 'Deine Antwort trifft die wichtigsten Programmschritte. Achte noch auf genaue Fachbegriffe und die richtige Farbe.'
         : 'Du hast einige wichtige Programmschritte erkannt. Ergaenze noch die fehlenden Details, besonders Farbe und Zahlen.'
+  };
+}
+
+
+function evaluateTaskCByRules_(
+  answer,
+  maxPoints
+) {
+  const normalizedAnswer =
+    normalizeGermanText_(
+      answer
+    );
+
+  const strengths = [];
+  const missing = [];
+  let points = 0;
+
+  const mentionsCircleLine =
+    containsAny_(normalizedAnswer, [
+      'zeile 1',
+      'erste zeile',
+      'circle',
+      'new circle',
+      'zahlen in zeile 1'
+    ]);
+
+  const mentionsCoordinates =
+    containsAny_(normalizedAnswer, [
+      'x und y',
+      'x- und y',
+      'x koordinate',
+      'x-koordinate',
+      'y koordinate',
+      'y-koordinate',
+      'koordinate',
+      'koordinaten'
+    ]);
+
+  const mentionsSize =
+    containsAny_(normalizedAnswer, [
+      'radius',
+      'groesse',
+      'grosse',
+      'durchmesser',
+      'breite',
+      'hoehe'
+    ]);
+
+  const mentionsMove =
+    containsAny_(normalizedAnswer, [
+      'move',
+      'bei move',
+      'verschiebung',
+      'verschoben',
+      'bewegt'
+    ]);
+
+  if (
+    mentionsCircleLine &&
+    mentionsCoordinates
+  ) {
+    points += 2;
+    strengths.push(
+      'Du erkennst, dass zwei Zahlen in der ersten Zeile die Position beziehungsweise Koordinaten betreffen.'
+    );
+  } else {
+    missing.push(
+      'Erklaere, dass zwei Zahlen in new Circle(...) die x- und y-Position festlegen.'
+    );
+  }
+
+  if (
+    mentionsCircleLine &&
+    mentionsSize
+  ) {
+    points += 1;
+    strengths.push(
+      'Du erkennst, dass eine Zahl die Groesse beziehungsweise den Radius des Kreises beschreibt.'
+    );
+  } else {
+    missing.push(
+      'Ergaenze, dass eine Zahl in new Circle(...) die Groesse des Kreises beeinflusst.'
+    );
+  }
+
+  if (
+    mentionsMove &&
+    mentionsCoordinates
+  ) {
+    points += 2;
+    strengths.push(
+      'Du beschreibst, dass move(...) die Verschiebung in x- und y-Richtung angibt.'
+    );
+  } else {
+    missing.push(
+      'Erklaere, dass die beiden Zahlen in move(10, 10) die Verschiebung in x- und y-Richtung angeben.'
+    );
+  }
+
+  if (
+    containsAny_(normalizedAnswer, [
+      'erste zahl',
+      'zweite zahl',
+      'dritte zahl',
+      '200',
+      '50'
+    ])
+  ) {
+    points += 1;
+    strengths.push(
+      'Du ordnest einzelne Zahlen oder Zahlenpositionen genauer zu.'
+    );
+  } else {
+    missing.push(
+      'Fuer die volle Punktzahl solltest du noch genauer sagen, welche Zahl wofuer steht.'
+    );
+  }
+
+  points =
+    clampNumber_(
+      points,
+      0,
+      maxPoints
+    );
+
+  return {
+    ok:
+      true,
+    points:
+      points,
+    maxPoints:
+      maxPoints,
+    status:
+      points >= maxPoints * 0.75
+        ? 'gut'
+        : points >= maxPoints * 0.4
+          ? 'teilweise richtig'
+          : 'noch unvollstaendig',
+    strengths:
+      strengths.slice(0, 4),
+    missing:
+      missing.slice(0, 4),
+    feedback:
+      points >= maxPoints * 0.75
+        ? 'Deine Antwort beschreibt die Bedeutung der Zahlen schon gut. Fuer die volle Punktzahl ordne die einzelnen Zahlen noch genauer zu.'
+        : 'Du hast wichtige Beobachtungen genannt. Ergaenze noch genauer, welche Zahl welche Wirkung hat.'
   };
 }
 

@@ -26,6 +26,10 @@
       --info-bg: #eef3f8;
       --success-bg: #edf7ee;
       --success-border: #7aae80;
+      --medium-bg: #fff4df;
+      --medium-border: #d99a3a;
+      --low-bg: #fff0f0;
+      --low-border: #d38181;
       --error-bg: #fff0f0;
       --error-border: #d38181;
       --warning-bg: #fff8df;
@@ -193,9 +197,20 @@
       border-radius: 6px;
     }
 
-    .result.success {
+    .result.success,
+    .result.high {
       background: var(--success-bg);
       border-color: var(--success-border);
+    }
+
+    .result.medium {
+      background: var(--medium-bg);
+      border-color: var(--medium-border);
+    }
+
+    .result.low {
+      background: var(--low-bg);
+      border-color: var(--low-border);
     }
 
     .result.error {
@@ -1224,7 +1239,10 @@ function isTrustedAppsScriptOrigin(origin) {
       resultBox.textContent = '';
       resultBox.hidden = false;
       resultBox.className =
-        'result success';
+        'result ' +
+        getEvaluationLevelClass(
+          result.points
+        );
 
 
       const heading =
@@ -1291,6 +1309,25 @@ function isTrustedAppsScriptOrigin(origin) {
       resultBox.appendChild(
         feedbackContainer
       );
+    }
+
+
+    /**
+     * Ordnet die Farbe der Auswertung den erreichten Punkten zu.
+     */
+    function getEvaluationLevelClass(points) {
+      const numericPoints =
+        Number(points);
+
+      if (numericPoints <= 2) {
+        return 'low';
+      }
+
+      if (numericPoints <= 4) {
+        return 'medium';
+      }
+
+      return 'high';
     }
 
 
