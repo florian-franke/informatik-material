@@ -509,10 +509,9 @@ function createPostMessageResponse_(
   parentOrigin
 ) {
   const targetOrigin =
-    parentOrigin &&
-    parentOrigin !== 'null'
-      ? parentOrigin
-      : '*';
+    getSafeTargetOrigin_(
+      parentOrigin
+    );
 
   const payload = {
     type:
@@ -539,6 +538,32 @@ function createPostMessageResponse_(
   return HtmlService
     .createHtmlOutput(html)
     .setTitle('Auswertung');
+}
+
+
+function getSafeTargetOrigin_(parentOrigin) {
+  if (
+    !parentOrigin ||
+    parentOrigin === 'null'
+  ) {
+    return '*';
+  }
+
+  try {
+    const url =
+      new URL(parentOrigin);
+
+    if (
+      url.protocol === 'http:' ||
+      url.protocol === 'https:'
+    ) {
+      return parentOrigin;
+    }
+  } catch (error) {
+    return '*';
+  }
+
+  return '*';
 }
 
 

@@ -460,6 +460,37 @@ ball.destroy();
 
 
     /**
+     * Gibt die Herkunft der Unterrichtsseite fuer postMessage
+     * zurueck. Bei lokal geoeffneten file://-Seiten wird keine
+     * feste Herkunft uebergeben, damit Apps Script mit "*" antwortet.
+     */
+    function getParentOriginForServer() {
+      if (
+        !location.origin ||
+        location.origin === 'null'
+      ) {
+        return '';
+      }
+
+      try {
+        const originUrl =
+          new URL(location.origin);
+
+        if (
+          originUrl.protocol === 'http:' ||
+          originUrl.protocol === 'https:'
+        ) {
+          return location.origin;
+        }
+      } catch (error) {
+        return '';
+      }
+
+      return '';
+    }
+
+
+    /**
      * Speichert aktuell laufende Anfragen.
      */
     const pendingRequests = new Map();
@@ -636,10 +667,7 @@ ball.destroy();
       appendHiddenField(
         form,
         'parentOrigin',
-        location.origin &&
-        location.origin !== 'null'
-          ? location.origin
-          : ''
+        getParentOriginForServer()
       );
 
 
