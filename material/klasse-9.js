@@ -5,7 +5,11 @@ window.material[9] = [
     files: [
       {
         name: "Aufgabe 1 – Programmtext analysieren",
-        path: "inf9/1-Programmieraufgaben-Online-IDE/index.html"
+        path: "inf9/1-Programmieraufgaben-Online-IDE/aufgabe1.html"
+      },
+      {
+        name: "Aufgabe 2 – Klassen analysieren und verändern",
+        path: "inf9/1-Programmieraufgaben-Online-IDE/aufgabe2.html"
       }
     ]
   },

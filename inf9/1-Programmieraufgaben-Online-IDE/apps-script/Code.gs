@@ -1,6 +1,7 @@
 /**
  * Apps-Script-Auswertungsserver fuer
- * inf9/1-Programmieraufgaben-Online-IDE/index.html.
+ * inf9/1-Programmieraufgaben-Online-IDE/aufgabe1.html
+ * und aufgabe2.html.
  *
  * Einrichtung:
  * 1. Diese Datei in ein Google-Apps-Script-Projekt kopieren.
@@ -36,6 +37,13 @@ const TASKS = {
       6,
     instruction:
       'Bewerte, ob die Schuelerantwort die Funktion jeder Programmzeile beschreibt.',
+    program:
+      [
+        'Circle ball = new Circle(200, 50, 50);',
+        'ball.move(10, 10);',
+        'ball.setFillColor(Color.red);',
+        'ball.destroy();'
+      ].join('\n'),
     expectedAspects: [
       'Circle ball = new Circle(200, 50, 50); erzeugt ein neues Circle-Objekt und speichert es in der Variablen ball.',
       'Die Zahlen im Konstruktor legen Position und Groesse des Kreises fest.',
@@ -53,6 +61,13 @@ const TASKS = {
       6,
     instruction:
       'Bewerte, ob die Schuelerantwort Beobachtungen zur Wirkung der Zahlen im Programm beschreibt.',
+    program:
+      [
+        'Circle ball = new Circle(200, 50, 50);',
+        'ball.move(10, 10);',
+        'ball.setFillColor(Color.red);',
+        'ball.destroy();'
+      ].join('\n'),
     expectedAspects: [
       'Die erste Zahl in new Circle(200, 50, 50) beeinflusst die horizontale Position des Kreises.',
       'Die zweite Zahl in new Circle(200, 50, 50) beeinflusst die vertikale Position des Kreises.',
@@ -60,6 +75,56 @@ const TASKS = {
       'Die erste Zahl in move(10, 10) beschreibt die horizontale Verschiebung.',
       'Die zweite Zahl in move(10, 10) beschreibt die vertikale Verschiebung.',
       'Die Antwort beruht erkennbar auf einzelnen Veraenderungen und Beobachtungen.'
+    ]
+  },
+
+  '2b': {
+    title:
+      'Aufgabe 2b: Klassen analysieren und veraendern',
+    maxPoints:
+      6,
+    instruction:
+      'Bewerte, ob die Schuelerantwort die Funktion jeder Programmzeile in Programm.java beschreibt.',
+    program:
+      [
+        'Programm.java:',
+        'Hund petersHund = new Hund(5, "Wuffti");',
+        '',
+        'Hund inasHund = new Hund(8, "Schnuffi");',
+        '',
+        'petersHund.zeigeDaten();',
+        '',
+        'inasHund.zeigeDaten();',
+        '',
+        'inasHund.belle();',
+        '',
+        'Hund.java:',
+        'class Hund {',
+        '   int alter;',
+        '   String name;',
+        '',
+        '   Hund(int par1, String par2)',
+        '   {',
+        '      alter = par1;',
+        '      name = par2;',
+        '   }',
+        '',
+        '   void zeigeDaten()',
+        '   {',
+        '      println("Der Hund heisst " + name + " und ist " + alter + " Jahre alt.");',
+        '   }',
+        '',
+        '   void belle() {',
+        '      println(name + ": Wuff wuff"); }',
+        '}'
+      ].join('\n'),
+    expectedAspects: [
+      'Hund petersHund = new Hund(5, "Wuffti"); erzeugt ein Hund-Objekt mit Alter 5 und Name Wuffti und speichert es in petersHund.',
+      'Hund inasHund = new Hund(8, "Schnuffi"); erzeugt ein zweites Hund-Objekt mit Alter 8 und Name Schnuffi und speichert es in inasHund.',
+      'petersHund.zeigeDaten(); ruft die Methode zeigeDaten fuer petersHund auf und gibt seine Daten aus.',
+      'inasHund.zeigeDaten(); ruft die Methode zeigeDaten fuer inasHund auf und gibt ihre Daten aus.',
+      'inasHund.belle(); ruft die Methode belle fuer inasHund auf und gibt den Belltext mit dem Namen aus.',
+      'Die Antwort verwendet eigene Worte und erklaert Objekte, Konstruktoraufrufe und Methodenaufrufe nachvollziehbar.'
     ]
   }
 };
@@ -441,6 +506,14 @@ function applyRuleBasedMinimum_(
       );
   }
 
+  if (task === TASKS['2b']) {
+    ruleBasedEvaluation =
+      evaluateTask2BByRules_(
+        answer,
+        task.maxPoints
+      );
+  }
+
   if (!ruleBasedEvaluation) {
     return evaluation;
   }
@@ -760,6 +833,173 @@ function evaluateTaskCByRules_(
 }
 
 
+function evaluateTask2BByRules_(
+  answer,
+  maxPoints
+) {
+  const normalizedAnswer =
+    normalizeGermanText_(
+      answer
+    );
+
+  const strengths = [];
+  const missing = [];
+  let points = 0;
+
+  if (containsAny_(normalizedAnswer, [
+    'petershund',
+    'wuffti',
+    '5',
+    'erzeugt',
+    'erstellt',
+    'new hund'
+  ])) {
+    points += 1;
+    strengths.push(
+      'Du erkennst, dass fuer Peter ein Hund-Objekt mit passenden Daten erzeugt wird.'
+    );
+  } else {
+    missing.push(
+      'Erklaere, dass petersHund als Hund mit Alter 5 und Name Wuffti erzeugt wird.'
+    );
+  }
+
+  if (containsAny_(normalizedAnswer, [
+    'inashund',
+    'schnuffi',
+    '8',
+    'zweiter hund',
+    'new hund'
+  ])) {
+    points += 1;
+    strengths.push(
+      'Du erkennst, dass ein zweites Hund-Objekt fuer Ina erzeugt wird.'
+    );
+  } else {
+    missing.push(
+      'Ergaenze, dass inasHund als Hund mit Alter 8 und Name Schnuffi erzeugt wird.'
+    );
+  }
+
+  if (
+    containsAny_(normalizedAnswer, [
+      'konstruktor',
+      'parameter',
+      'alter',
+      'name'
+    ]) &&
+    containsAny_(normalizedAnswer, [
+      '5',
+      '8',
+      'wuffti',
+      'schnuffi'
+    ])
+  ) {
+    points += 1;
+    strengths.push(
+      'Du beschreibst, dass die Werte an den Konstruktor uebergeben werden.'
+    );
+  } else {
+    missing.push(
+      'Ergaenze, dass die Klammerwerte an den Konstruktor fuer Alter und Name uebergeben werden.'
+    );
+  }
+
+  if (
+    containsAny_(normalizedAnswer, [
+      'petershund.zeigedaten',
+      'peters hund',
+      'zeige daten',
+      'daten aus'
+    ]) &&
+    containsAny_(normalizedAnswer, [
+      'peter',
+      'petershund',
+      'wuffti'
+    ])
+  ) {
+    points += 1;
+    strengths.push(
+      'Du erklaerst den Methodenaufruf zeigeDaten fuer petersHund.'
+    );
+  } else {
+    missing.push(
+      'Beschreibe, dass petersHund.zeigeDaten() die Daten von petersHund ausgibt.'
+    );
+  }
+
+  if (
+    containsAny_(normalizedAnswer, [
+      'inashund.zeigedaten',
+      'inas hund',
+      'zeige daten',
+      'daten aus'
+    ]) &&
+    containsAny_(normalizedAnswer, [
+      'ina',
+      'inashund',
+      'schnuffi'
+    ])
+  ) {
+    points += 1;
+    strengths.push(
+      'Du erklaerst den Methodenaufruf zeigeDaten fuer inasHund.'
+    );
+  } else {
+    missing.push(
+      'Beschreibe, dass inasHund.zeigeDaten() die Daten von inasHund ausgibt.'
+    );
+  }
+
+  if (containsAny_(normalizedAnswer, [
+    'bellt',
+    'bellen',
+    'belle',
+    'wuff wuff',
+    'belltext'
+  ])) {
+    points += 1;
+    strengths.push(
+      'Du erkennst, dass inasHund.belle() den Hund bellen laesst.'
+    );
+  } else {
+    missing.push(
+      'Ergaenze, dass inasHund.belle() die Methode belle aufruft und einen Belltext ausgibt.'
+    );
+  }
+
+  points =
+    clampNumber_(
+      points,
+      0,
+      maxPoints
+    );
+
+  return {
+    ok:
+      true,
+    points:
+      points,
+    maxPoints:
+      maxPoints,
+    status:
+      points >= maxPoints * 0.75
+        ? 'gut'
+        : points >= maxPoints * 0.4
+          ? 'teilweise richtig'
+          : 'noch unvollstaendig',
+    strengths:
+      strengths.slice(0, 4),
+    missing:
+      missing.slice(0, 4),
+    feedback:
+      points >= maxPoints * 0.75
+        ? 'Deine Antwort erklaert die Objekte und Methodenaufrufe schon gut. Achte noch darauf, Alter, Name und Methoden genau zuzuordnen.'
+        : 'Du hast erste Programmschritte erkannt. Ergaenze noch genauer, welche Objekte erzeugt werden und welche Methoden aufgerufen werden.'
+  };
+}
+
+
 function normalizeGermanText_(text) {
   return String(text || '')
     .toLowerCase()
@@ -797,10 +1037,7 @@ function buildPrompt_(
     'Bewerte eine kurze Schuelerantwort zu einem Java-/LearnJ-Programm.',
     '',
     'Programm:',
-    'Circle ball = new Circle(200, 50, 50);',
-    'ball.move(10, 10);',
-    'ball.setFillColor(Color.red);',
-    'ball.destroy();',
+    task.program,
     '',
     'Aufgabe:',
     task.title,
