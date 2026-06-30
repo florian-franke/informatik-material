@@ -615,6 +615,11 @@
       button.addEventListener('click', showSubjectSelection);
     });
 
+    const initialSubject = new URLSearchParams(window.location.search).get('subject');
+    if (initialSubject && document.getElementById(`subject-${initialSubject}`)) {
+      showSubject(initialSubject);
+    }
+
     // ═══════════════════════════════════════════════════════════════════
     //  MATERIALSTRUKTUR
     //  So funktioniert das Schema:

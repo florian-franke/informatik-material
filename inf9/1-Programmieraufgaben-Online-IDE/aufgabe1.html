@@ -68,6 +68,34 @@
       opacity: 0.88;
     }
 
+    .page-nav {
+      margin-bottom: 0.9rem;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+
+      padding: 0.55rem 0.85rem;
+
+      border: 1px solid rgb(255 255 255 / 55%);
+      border-radius: 5px;
+
+      background: rgb(255 255 255 / 12%);
+      color: #ffffff;
+
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .back-link:hover,
+    .back-link:focus-visible {
+      background: rgb(255 255 255 / 22%);
+      outline: 2px solid #ffffff;
+      outline-offset: 2px;
+    }
+
     main {
       max-width: 1500px;
       margin: 1.5rem auto;
@@ -304,6 +332,12 @@
 <body>
 
   <header>
+    <nav class="page-nav" aria-label="Seitennavigation">
+      <a class="back-link" href="../../index.html?subject=informatik">
+        &larr; Zurück zum Informatik-Menü
+      </a>
+    </nav>
+
     <h1>Aufgabe 1 – Programmtext analysieren</h1>
 
     <p>
