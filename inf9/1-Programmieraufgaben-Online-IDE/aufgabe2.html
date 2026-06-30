@@ -183,6 +183,23 @@
       margin: 0.4rem 0;
     }
 
+    .tool-embed {
+      overflow: hidden;
+      margin-top: 1rem;
+
+      border: 1px solid var(--border);
+      border-radius: 6px;
+
+      background: #f9fafb;
+    }
+
+    .tool-embed iframe {
+      display: block;
+      width: 100%;
+      min-height: 560px;
+      border: 0;
+    }
+
     textarea {
       display: block;
       width: 100%;
@@ -505,6 +522,29 @@ class Hund {
         class="result"
         aria-live="polite"
         hidden>
+      </div>
+
+    </section>
+
+
+    <!-- Aufgabe 2d -->
+
+    <section class="task-card">
+
+      <h2>Aufgabe 2d)</h2>
+
+      <p>
+        Betrachte den Code von <strong>Hund</strong> und zeichne eine
+        passende Klassenkarte.
+      </p>
+
+      <div class="tool-embed">
+        <iframe
+          title="Klassenkarte zu Aufgabe 2d"
+          src="klassenkarte-klasse-only.html"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
       </div>
 
     </section>
