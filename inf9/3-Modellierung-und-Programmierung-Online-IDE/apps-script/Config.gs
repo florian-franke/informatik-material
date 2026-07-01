@@ -1,6 +1,6 @@
 /**
  * Apps-Script-Auswertungsserver fuer
- * inf9/1-Programmieraufgaben-Online-IDE/aufgabe1.html
+ * inf9/3-Modellierung-und-Programmierung-Online-IDE/aufgabe1.html
  * und aufgabe2.html.
  *
  * Einrichtung:
